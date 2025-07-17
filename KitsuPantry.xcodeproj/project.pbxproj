@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6A8CC65D2E29B5080019D9EE /* UIResponder+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A8CC65C2E29B5080019D9EE /* UIResponder+Extension.swift */; };
+		6A8CC65F2E29B6540019D9EE /* SelectAllTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A8CC65E2E29B6540019D9EE /* SelectAllTextField.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		6A8A80492E29984600E7A27E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +32,8 @@
 		6A8A80332E29984500E7A27E /* KitsuPantry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitsuPantry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A8A80482E29984600E7A27E /* KitsuPantryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KitsuPantryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A8A80522E29984600E7A27E /* KitsuPantryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KitsuPantryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A8CC65C2E29B5080019D9EE /* UIResponder+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIResponder+Extension.swift"; sourceTree = "<group>"; };
+		6A8CC65E2E29B6540019D9EE /* SelectAllTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAllTextField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +82,8 @@
 		6A8A802A2E29984500E7A27E = {
 			isa = PBXGroup;
 			children = (
+				6A8CC65C2E29B5080019D9EE /* UIResponder+Extension.swift */,
+				6A8CC65E2E29B6540019D9EE /* SelectAllTextField.swift */,
 				6A8A80352E29984500E7A27E /* KitsuPantry */,
 				6A8A804B2E29984600E7A27E /* KitsuPantryTests */,
 				6A8A80552E29984600E7A27E /* KitsuPantryUITests */,
@@ -236,6 +245,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A8CC65D2E29B5080019D9EE /* UIResponder+Extension.swift in Sources */,
+				6A8CC65F2E29B6540019D9EE /* SelectAllTextField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

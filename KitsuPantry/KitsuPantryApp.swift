@@ -2,7 +2,7 @@
 //  KitsuPantryApp.swift
 //  KitsuPantry
 //
-//  Created by Silver WolfStar on 7/17/25.
+//  Created by Silver on 7/17/25.
 //
 
 import SwiftUI

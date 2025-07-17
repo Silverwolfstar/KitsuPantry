@@ -2,85 +2,66 @@
 //  ContentView.swift
 //  KitsuPantry
 //
-//  Created by Silver WolfStar on 7/17/25.
+//  Created by Silver on 7/17/25.
 //
 
 import SwiftUI
-import CoreData
+
+struct FoodItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let location: String
+    let quantity: Int
+    let expirationDate: Date
+    let notes: String
+}
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+    @State private var items: [FoodItem] = [
+        FoodItem(name: "Milk", location: "Fridge", quantity: 1, expirationDate: Date().addingTimeInterval(86400 * 3), notes: "")
+    ]
+    
+    @State private var showingAddItem = false
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
+            List(items) { item in
+                VStack(alignment: .leading) {
+                    Text(item.name).font(.headline)
+                    Text("\(item.location) — Qty: \(item.quantity)")
+                    Text("Expires: \(formatted(date: item.expirationDate))")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .foregroundColor(.gray)
                 }
-                .onDelete(perform: deleteItems)
             }
+            .navigationTitle("KitsuPantry")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "slider.horizontal.3")
+                    }
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingAddItem = true
+                    }) {
+                        Image(systemName: "plus")
                     }
                 }
             }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            .sheet(isPresented: $showingAddItem) {
+                AddItemView { newItem in
+                    items.append(newItem)
+                }
             }
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
+    func formatted(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
-}
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
