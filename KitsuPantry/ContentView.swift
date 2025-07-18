@@ -33,6 +33,12 @@ struct ContentView: View {
                         .font(.caption)
                         .foregroundColor(.gray)
                         .foregroundColor(.gray)
+                    if !item.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text("Notes:\n" + item.notes)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 2)
+                    }
                 }
             }
             .navigationTitle("KitsuPantry")
