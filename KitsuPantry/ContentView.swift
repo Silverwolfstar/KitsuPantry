@@ -25,21 +25,24 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            List(items) { item in
-                VStack(alignment: .leading) {
-                    Text(item.name).font(.headline)
-                    Text("\(item.location) — Qty: \(item.quantity)")
-                    Text("Expires: \(formatted(date: item.expirationDate))")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .foregroundColor(.gray)
-                    if !item.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        Text("Notes:\n" + item.notes)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 2)
+            List{
+                ForEach(items) { item in
+                    VStack(alignment: .leading) {
+                        Text(item.name).font(.headline)
+                        Text("\(item.location) — Qty: \(item.quantity)")
+                        Text("Expires: \(formatted(date: item.expirationDate))")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .foregroundColor(.gray)
+                        if !item.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Notes:\n" + item.notes)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 2)
+                        }
                     }
                 }
+                .onDelete(perform: deleteItems)
             }
             .navigationTitle("KitsuPantry")
             .toolbar {
@@ -69,5 +72,9 @@ struct ContentView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
+    }
+    
+    func deleteItems(at offsets: IndexSet) {
+        items.remove(atOffsets: offsets)
     }
 }
