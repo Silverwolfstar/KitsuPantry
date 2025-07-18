@@ -25,36 +25,58 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            List(items) { item in
-                VStack(alignment: .leading) {
-                    Text(item.name).font(.headline)
-                    Text("\(item.location) — Qty: \(item.quantity)")
-                    Text("Expires: \(formatted(date: item.expirationDate))")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .foregroundColor(.gray)
+            List {
+                // Existing items
+                ForEach(items) { item in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.name).font(.headline)
+                        Text("\(item.location) — Qty: \(item.quantity)")
+                        Text("Expires: \(formatted(date: item.expirationDate))")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+
+                        if !item.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Notes:\n" + item.notes)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 2)
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
+
+                // "+" button as part of the list
+                Button(action: {
+                    showingAddItem = true
+                }) {
+                    HStack {
+                        Spacer()
+                        Text("+")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                        Spacer()
+                    }
+                    .padding()
+                    .background(Color.accentColor)
+                    .cornerRadius(10)
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
+                .padding(.vertical, 6)
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("KitsuPantry")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "slider.horizontal.3")
                     }
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingAddItem = true
-                    }) {
-                        Image(systemName: "plus")
-                    }
-                }
             }
-            .sheet(isPresented: $showingAddItem) {
-                AddItemView { newItem in
-                    items.append(newItem)
-                }
+        }
+        .sheet(isPresented: $showingAddItem) {
+            AddItemView { newItem in
+                items.append(newItem)
             }
         }
     }
