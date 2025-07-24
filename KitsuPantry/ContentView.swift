@@ -6,36 +6,33 @@
 //
 
 import SwiftUI
-
-struct FoodItem: Identifiable {
-    let id = UUID()
-    let name: String
-    let location: String
-    let quantity: Int
-    let expirationDate: Date
-    let notes: String
-}
+import CoreData
 
 struct ContentView: View {
-    @State private var items: [FoodItem] = [
-        FoodItem(name: "Milk", location: "Fridge", quantity: 1, expirationDate: Date().addingTimeInterval(86400 * 3), notes: "")
-    ]
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \FoodItemEntity.expirationDate, ascending: true)],
+        animation: .default)
+    private var items: FetchedResults<FoodItemEntity>
     
     @State private var showingAddItem = false
 
     var body: some View {
         NavigationView {
-            List{
+            List {
                 ForEach(items) { item in
                     VStack(alignment: .leading) {
-                        Text(item.name).font(.headline)
-                        Text("\(item.location) — Qty: \(item.quantity)")
-                        Text("Expires: \(formatted(date: item.expirationDate))")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                            .foregroundColor(.gray)
-                        if !item.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            Text("Notes:\n" + item.notes)
+                        Text(item.name ?? "Unnamed").font(.headline)
+                        Text("\(item.location ?? "Unknown") — Qty: \(item.quantity)")
+                        if let date = item.expirationDate {
+                            Text("Expires: \(formatted(date: date))")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        if let notes = item.notes,
+                           !notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Notes:\n\(notes)")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                                 .padding(.top, 2)
@@ -51,30 +48,28 @@ struct ContentView: View {
                         Image(systemName: "slider.horizontal.3")
                     }
                 }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingAddItem = true
-                    }) {
+                    Button(action: { showingAddItem = true }) {
                         Image(systemName: "plus")
                     }
                 }
             }
             .sheet(isPresented: $showingAddItem) {
-                AddItemView { newItem in
-                    items.append(newItem)
-                }
+                AddItemView()
             }
         }
     }
 
-    func formatted(date: Date) -> String {
+    private func deleteItems(at offsets: IndexSet) {
+        for index in offsets {
+            viewContext.delete(items[index])
+        }
+        try? viewContext.save()
+    }
+
+    private func formatted(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
-    }
-    
-    func deleteItems(at offsets: IndexSet) {
-        items.remove(atOffsets: offsets)
     }
 }

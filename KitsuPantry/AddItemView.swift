@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddItemView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
 
     @State private var name = ""
     @State private var location = "Fridge"
@@ -17,8 +18,6 @@ struct AddItemView: View {
     @State private var notes = ""
     @FocusState private var quantityFieldIsFocused: Bool
 
-    var onSave: (FoodItem) -> Void
-
     let locations = ["Fridge", "Freezer", "Pantry"]
 
     var body: some View {
@@ -26,11 +25,13 @@ struct AddItemView: View {
             Form {
                 Section(header: Text("Item Info")) {
                     TextField("Name", text: $name)
+
                     Picker("Location", selection: $location) {
                         ForEach(locations, id: \.self) { loc in
                             Text(loc)
                         }
                     }
+
                     HStack {
                         Text("Quantity")
                         Spacer()
@@ -45,6 +46,7 @@ struct AddItemView: View {
                     }
 
                     DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Notes")
                             .font(.caption)
@@ -64,14 +66,13 @@ struct AddItemView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        let newItem = FoodItem(
-                            name: name,
-                            location: location,
-                            quantity: quantity,
-                            expirationDate: expirationDate,
-                            notes: notes
-                        )
-                        onSave(newItem)
+                        let newItem = FoodItemEntity(context: viewContext)
+                        newItem.name = name
+                        newItem.location = location
+                        newItem.quantity = Int16(quantity)
+                        newItem.expirationDate = expirationDate
+                        newItem.notes = notes
+                        try? viewContext.save()
                         dismiss()
                     }
                 }
@@ -83,5 +84,4 @@ struct AddItemView: View {
             }
         }
     }
-
 }
