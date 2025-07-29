@@ -7,19 +7,35 @@
 
 import SwiftUI
 
-struct AddItemView: View {
-    @Environment(\.dismiss) var dismiss
-    @Environment(\.managedObjectContext) private var viewContext
+enum FormMode {
+    case add
+    case edit(FoodItemEntity)
+}
 
+struct ItemFormView: View {
+    let mode: FormMode
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.dismiss) var dismiss
+
+    // Form fields
     @State private var name = ""
     @State private var location = "Fridge"
     @State private var quantity = 1
     @State private var expirationDate = Date()
     @State private var notes = ""
+
+    // Focus management
     @FocusState private var quantityFieldIsFocused: Bool
 
     let locations = ["Fridge", "Freezer", "Pantry"]
 
+    private var title: String {
+        switch mode {
+        case .add: return "Add Item"
+        case .edit: return "Edit Item"
+        }
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -62,16 +78,24 @@ struct AddItemView: View {
                     }
                 }
             }
-            .navigationTitle("Add Item")
+            .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        let newItem = FoodItemEntity(context: viewContext)
-                        newItem.name = name
-                        newItem.location = location
-                        newItem.quantity = Int16(quantity)
-                        newItem.expirationDate = expirationDate
-                        newItem.notes = notes
+                        let item: FoodItemEntity
+                        switch mode {
+                        case .add:
+                            item = FoodItemEntity(context: viewContext)
+                        case .edit(let existingItem):
+                            item = existingItem
+                        }
+
+                        item.name = name
+                        item.location = location
+                        item.quantity = Int16(quantity)
+                        item.expirationDate = expirationDate
+                        item.notes = notes
+                        
                         try? viewContext.save()
                         dismiss()
                     }
@@ -82,6 +106,16 @@ struct AddItemView: View {
                     }
                 }
             }
+            .onAppear {
+                if case let .edit(existingItem) = mode {
+                    name = existingItem.name ?? ""
+                    location = existingItem.location ?? "Fridge"
+                    quantity = Int(existingItem.quantity)
+                    expirationDate = existingItem.expirationDate ?? Date()
+                    notes = existingItem.notes ?? ""
+                }
+            }
+            
         }
     }
 }

@@ -16,7 +16,22 @@ struct ContentView: View {
         animation: .default)
     private var items: FetchedResults<FoodItemEntity>
     
-    @State private var showingAddItem = false
+    enum ActiveSheet: Identifiable {
+        case add
+        case edit(FoodItemEntity)
+
+        var id: AnyHashable {
+            switch self {
+            case .add:
+                return UUID()
+            case .edit(let item):
+                return item.objectID
+            }
+        }
+    }
+
+    @State private var activeSheet: ActiveSheet?
+
 
     var body: some View {
         NavigationView {
@@ -38,6 +53,9 @@ struct ContentView: View {
                                 .padding(.top, 2)
                         }
                     }
+                    .onTapGesture {
+                        activeSheet = .edit(item)
+                    }
                 }
                 .onDelete(perform: deleteItems)
             }
@@ -49,13 +67,18 @@ struct ContentView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddItem = true }) {
+                    Button(action: { activeSheet = .add }) {
                         Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $showingAddItem) {
-                AddItemView()
+            .sheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .add:
+                    ItemFormView(mode: .add)
+                case .edit(let item):
+                    ItemFormView(mode: .edit(item))
+                }
             }
         }
     }
