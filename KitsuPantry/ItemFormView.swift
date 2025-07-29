@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum FormMode {
-    case add
+    case add(defaultLocation: String? = nil)
     case edit(FoodItemEntity)
 }
 
@@ -107,12 +107,15 @@ struct ItemFormView: View {
                 }
             }
             .onAppear {
-                if case let .edit(existingItem) = mode {
-                    name = existingItem.name ?? ""
-                    location = existingItem.location ?? "Fridge"
-                    quantity = Int(existingItem.quantity)
-                    expirationDate = existingItem.expirationDate ?? Date()
-                    notes = existingItem.notes ?? ""
+                switch mode {
+                case .add(let defaultLoc):
+                    if let loc = defaultLoc { location = loc }
+                case .edit(let item):
+                    name = item.name ?? ""
+                    location = item.location ?? "Fridge"
+                    quantity = Int(item.quantity)
+                    expirationDate = item.expirationDate ?? Date()
+                    notes = item.notes ?? ""
                 }
             }
             
