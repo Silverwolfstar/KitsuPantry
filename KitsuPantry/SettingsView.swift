@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Binding var categories: [String]
     @AppStorage("highlightExpired") private var highlightExpired = true
     @AppStorage("highlightExpiringSoon") private var highlightExpiringSoon = true
     @AppStorage("suppressDuplicatePopups") private var suppressDuplicatePopups = false
@@ -25,6 +26,12 @@ struct SettingsView: View {
 //                Stepper("Default Quantity: \(defaultQuantity)", value: $defaultQuantity, in: 1...100)
             }
 
+            Section(header: Text("Tabs & Categories")) {
+                NavigationLink("Manage Tabs") {
+                    ManageCategoriesView(categories: $categories)
+                }
+            }
+            
             Section(header: Text("Themes & UI")) {
                 Text("Coming soon: theme customization 🦊")
                     .foregroundColor(.gray)

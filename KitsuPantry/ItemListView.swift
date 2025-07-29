@@ -15,6 +15,7 @@ enum ItemFilter {
 
 struct ItemsListView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Binding var categories: [String]
 
     @FetchRequest private var items: FetchedResults<FoodItemEntity>
 
@@ -36,7 +37,7 @@ struct ItemsListView: View {
     private let title: String
     private let defaultLocationForAdd: String?
 
-    init(filter: ItemFilter, title: String) {
+    init(filter: ItemFilter, title: String, categories: Binding<[String]>) {
         self.title = title
         switch filter {
         case .all:
@@ -45,7 +46,8 @@ struct ItemsListView: View {
                 sortDescriptors: [NSSortDescriptor(keyPath: \FoodItemEntity.expirationDate, ascending: true)],
                 animation: .default
             )
-            defaultLocationForAdd = nil
+            self.defaultLocationForAdd = nil
+            self._categories = categories
         case .location(let loc):
             _items = FetchRequest(
                 entity: FoodItemEntity.entity(),
@@ -53,7 +55,8 @@ struct ItemsListView: View {
                 predicate: NSPredicate(format: "location == %@", loc),
                 animation: .default
             )
-            defaultLocationForAdd = loc
+            self.defaultLocationForAdd = loc
+            self._categories = categories
         }
     }
 
@@ -86,7 +89,7 @@ struct ItemsListView: View {
             .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView()) {
+                    NavigationLink(destination: SettingsView(categories: $categories)) {
                         Image(systemName: "slider.horizontal.3")
                     }
                 }
