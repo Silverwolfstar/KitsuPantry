@@ -10,6 +10,13 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    
+    private var sortedCategories: [CategoryEntity] {
+        let all = categories.first(where: { $0.name == "All" })
+        let others = categories.filter { $0.name != "All" }
+            .sorted { ($0.name ?? "") < ($1.name ?? "") }
+        return (all != nil) ? [all!] + others : others
+    }
 
     @FetchRequest(
         entity: CategoryEntity.entity(),
@@ -22,7 +29,7 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Picker("Category", selection: $selectedCategory) {
-                ForEach(categories, id: \.self) { category in
+                ForEach(sortedCategories, id: \.self) { category in
                     Text(category.name ?? "Unnamed").tag(category as CategoryEntity?)
                 }
             }

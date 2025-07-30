@@ -21,7 +21,7 @@ struct ItemFormView: View {
 
     // Form fields
     @State private var name = ""
-    @State private var quantity = 1
+    @State private var quantity: Double = 1
     @State private var expirationDate = Date()
     @State private var notes = ""
     @State private var selectedCategory: CategoryEntity?
@@ -34,6 +34,13 @@ struct ItemFormView: View {
         case .add: return "Add Item"
         case .edit: return "Edit Item"
         }
+    }
+    
+    private var sortedCategories: [CategoryEntity] {
+        let all = categories.first(where: { $0.name == "All" })
+        let others = categories.filter { $0.name != "All" }
+            .sorted { ($0.name ?? "") < ($1.name ?? "") }
+        return (all != nil) ? [all!] + others : others
     }
 
     // If it crashes again I will cry
@@ -52,7 +59,7 @@ struct ItemFormView: View {
                     TextField("Name", text: $name)
 
                     Picker("Category", selection: $selectedCategory) {
-                        ForEach(categories.sorted(by: { ($0.name ?? "") < ($1.name ?? "") }), id: \.self) { cat in
+                        ForEach(sortedCategories, id: \.self) { cat in
                             Text(cat.name ?? "Unnamed").tag(cat as CategoryEntity?)
                         }
                     }
@@ -108,6 +115,7 @@ struct ItemFormView: View {
                         try? viewContext.save()
                         dismiss()
                     }
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -126,7 +134,7 @@ struct ItemFormView: View {
                 case .edit(let item):
                     name = item.name ?? ""
                     selectedCategory = item.category
-                    quantity = Int(item.quantity)
+                    quantity = Double(item.quantity)
                     expirationDate = item.expirationDate ?? Date()
                     notes = item.notes ?? ""
                 }

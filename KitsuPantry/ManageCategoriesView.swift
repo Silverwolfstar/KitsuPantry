@@ -12,6 +12,13 @@ struct ManageCategoriesView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var categories: [CategoryEntity]
     @State private var newCategoryName: String = ""
+    
+    private var sortedCategories: [CategoryEntity] {
+        let all = categories.first(where: { $0.name == "All" })
+        let others = categories.filter { $0.name != "All" }
+            .sorted { ($0.name ?? "") < ($1.name ?? "") }
+        return (all != nil) ? [all!] + others : others
+    }
 
     var body: some View {
         Form {
@@ -38,7 +45,7 @@ struct ManageCategoriesView: View {
             }
 
             Section(header: Text("Current Categories")) {
-                ForEach(categories.filter { $0.name != "All" }, id: \.self) { category in
+                ForEach(sortedCategories.filter { $0.name != "All" }, id: \.self) { category in
                     Text(category.name ?? "Unnamed")
                 }
                 .onDelete(perform: deleteCategory)
