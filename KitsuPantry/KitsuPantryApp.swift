@@ -10,7 +10,7 @@ import CoreData
 
 @main
 struct KitsuPantryApp: App {
-    let persistenceController = PersistenceController(inMemory: true) //.shared
+    let persistenceController = PersistenceController.shared
 
     var body: some Scene {
         WindowGroup {
