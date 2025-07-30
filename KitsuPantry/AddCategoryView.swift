@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct AddCategoryView: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var categories: [String]
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @Binding var categories: [CategoryEntity]
     @State private var newCategoryName: String = ""
 
     var body: some View {
@@ -19,8 +22,16 @@ struct AddCategoryView: View {
 
                 Button("Add") {
                     let trimmed = newCategoryName.trimmingCharacters(in: .whitespaces)
-                    guard !trimmed.isEmpty, !categories.contains(trimmed) else { return }
-                    categories.append(trimmed)
+                    guard !trimmed.isEmpty,
+                          !categories.contains(where: { $0.name?.lowercased() == trimmed.lowercased() }) else {
+                        return
+                    }
+
+                    let newCategory = CategoryEntity(context: viewContext)
+                    newCategory.name = trimmed
+
+                    try? viewContext.save()
+
                     dismiss()
                 }
                 .disabled(newCategoryName.trimmingCharacters(in: .whitespaces).isEmpty)

@@ -11,38 +11,37 @@ import CoreData
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
-    @State private var categories: [String] = ["All", "Fridge", "Freezer", "Pantry"]
-    @State private var selectedCategory: String = "All"
-    @State private var showAddCategorySheet = false
+    @FetchRequest(
+        entity: CategoryEntity.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \CategoryEntity.name, ascending: true)],
+        animation: .default
+    ) private var categories: FetchedResults<CategoryEntity>
+
+    @State private var selectedCategory: CategoryEntity?
 
     var body: some View {
         VStack {
             Picker("Category", selection: $selectedCategory) {
                 ForEach(categories, id: \.self) { category in
-                    Text(category).tag(category)
+                    Text(category.name ?? "Unnamed").tag(category as CategoryEntity?)
                 }
-                Text("+").tag("+")
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
-            .onChange(of: selectedCategory) { newValue in
-                if newValue == "+" {
-                    showAddCategorySheet = true
-                    selectedCategory = categories.first ?? "All"
-                }
-            }
 
             ItemsListView(
-                filter: selectedCategory == "All" ? .all : .location(selectedCategory),
-                title: selectedCategory,
-                categories: $categories
+                filter: selectedCategory == nil || selectedCategory?.name == "All"
+                    ? .all
+                    : .category(selectedCategory!),
+                title: selectedCategory?.name ?? "All",
+                categories: .constant(Array(categories))  // You can pass a constant if not editing
             )
-        }
-        .sheet(isPresented: $showAddCategorySheet) {
-            AddCategoryView(categories: $categories)
         }
         .onAppear {
             seedDefaultCategories(context: viewContext)
+            if selectedCategory == nil {
+                selectedCategory = categories.first(where: { $0.name == "All" })
+            }
         }
     }
 }

@@ -10,12 +10,13 @@ import CoreData
 
 enum ItemFilter {
     case all
-    case location(String)
+    case category(CategoryEntity)
 }
 
 struct ItemsListView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var categories: [String]
+    
+    @Binding var categories: [CategoryEntity]
 
     @FetchRequest private var items: FetchedResults<FoodItemEntity>
 
@@ -25,8 +26,8 @@ struct ItemsListView: View {
 
         var id: AnyHashable {
             switch self {
-            case .add:
-                return UUID()
+            case .add(let defaultLocation):
+                return defaultLocation ?? "new"
             case .edit(let item):
                 return item.objectID
             }
@@ -37,7 +38,7 @@ struct ItemsListView: View {
     private let title: String
     private let defaultLocationForAdd: String?
 
-    init(filter: ItemFilter, title: String, categories: Binding<[String]>) {
+    init(filter: ItemFilter, title: String, categories: Binding<[CategoryEntity]>) {
         self.title = title
         switch filter {
         case .all:
@@ -48,14 +49,15 @@ struct ItemsListView: View {
             )
             self.defaultLocationForAdd = nil
             self._categories = categories
-        case .location(let loc):
+        case .category(let category):
             _items = FetchRequest(
                 entity: FoodItemEntity.entity(),
                 sortDescriptors: [NSSortDescriptor(keyPath: \FoodItemEntity.expirationDate, ascending: true)],
-                predicate: NSPredicate(format: "location == %@", loc),
+                predicate: NSPredicate(format: "category == %@", category),
                 animation: .default
             )
-            self.defaultLocationForAdd = loc
+            self.defaultLocationForAdd = category.name
+
             self._categories = categories
         }
     }
@@ -64,16 +66,22 @@ struct ItemsListView: View {
         NavigationView {
             List {
                 ForEach(items) { item in
-                    VStack(alignment: .leading) {
-                        Text(item.name ?? "Unnamed").font(.headline)
-                        Text("\(item.location ?? "Unknown") — Qty: \(item.quantity)")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.name ?? "Unnamed")
+                            .font(.headline)
+
+                        let categoryName = item.category?.name ?? "Unknown"
+                        let qty = Int(item.quantity)
+                        Text("\(categoryName) — Qty: \(qty)")
+
                         if let date = item.expirationDate {
                             Text("Expires: \(formatted(date: date))")
                                 .font(.caption)
                                 .foregroundColor(.gray)
                         }
-                        if let notes = item.notes,
-                           !notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+
+                        if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
+                           !notes.isEmpty {
                             Text("Notes:\n\(notes)")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
@@ -107,13 +115,12 @@ struct ItemsListView: View {
                     }
                 }
             }
-
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
                 case .add(let defaultLoc):
-                    ItemFormView(mode: .add(defaultLocation: defaultLoc))
+                    ItemFormView(mode: .add(defaultLocation: defaultLoc), categories: $categories)
                 case .edit(let item):
-                    ItemFormView(mode: .edit(item))
+                    ItemFormView(mode: .edit(item), categories: $categories)
                 }
             }
         }

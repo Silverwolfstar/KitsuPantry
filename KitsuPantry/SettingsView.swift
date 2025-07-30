@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Binding var categories: [String]
+    @Binding var categories: [CategoryEntity]
     @AppStorage("highlightExpired") private var highlightExpired = true
     @AppStorage("highlightExpiringSoon") private var highlightExpiringSoon = true
     @AppStorage("suppressDuplicatePopups") private var suppressDuplicatePopups = false

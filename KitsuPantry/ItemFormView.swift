@@ -17,17 +17,17 @@ struct ItemFormView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
 
+    @Binding var categories: [CategoryEntity]
+
     // Form fields
     @State private var name = ""
-    @State private var location = "Fridge"
     @State private var quantity = 1
     @State private var expirationDate = Date()
     @State private var notes = ""
+    @State private var selectedCategory: CategoryEntity?
 
     // Focus management
     @FocusState private var quantityFieldIsFocused: Bool
-
-    let locations = ["Fridge", "Freezer", "Pantry"]
 
     private var title: String {
         switch mode {
@@ -35,23 +35,32 @@ struct ItemFormView: View {
         case .edit: return "Edit Item"
         }
     }
-    
+
+    // If it crashes again I will cry
+    private var quantityFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimum = 0
+        formatter.maximumFractionDigits = 0
+        return formatter
+    }
+
     var body: some View {
         NavigationView {
             Form {
                 Section(header: Text("Item Info")) {
                     TextField("Name", text: $name)
 
-                    Picker("Location", selection: $location) {
-                        ForEach(locations, id: \.self) { loc in
-                            Text(loc)
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(categories.sorted(by: { ($0.name ?? "") < ($1.name ?? "") }), id: \.self) { cat in
+                            Text(cat.name ?? "Unnamed").tag(cat as CategoryEntity?)
                         }
                     }
 
                     HStack {
                         Text("Quantity")
                         Spacer()
-                        TextField("", value: $quantity, formatter: NumberFormatter())
+                        TextField("", value: $quantity, formatter: quantityFormatter)
                             .frame(width: 60)
                             .keyboardType(.numberPad)
                             .focused($quantityFieldIsFocused)
@@ -91,11 +100,11 @@ struct ItemFormView: View {
                         }
 
                         item.name = name
-                        item.location = location
+                        item.category = selectedCategory
                         item.quantity = Int16(quantity)
                         item.expirationDate = expirationDate
                         item.notes = notes
-                        
+
                         try? viewContext.save()
                         dismiss()
                     }
@@ -109,16 +118,19 @@ struct ItemFormView: View {
             .onAppear {
                 switch mode {
                 case .add(let defaultLoc):
-                    if let loc = defaultLoc { location = loc }
+                    if let loc = defaultLoc {
+                        selectedCategory = categories.first(where: { $0.name == loc })
+                    } else {
+                        selectedCategory = categories.first(where: { !($0.name ?? "").elementsEqual("All") })
+                    }
                 case .edit(let item):
                     name = item.name ?? ""
-                    location = item.location ?? "Fridge"
+                    selectedCategory = item.category
                     quantity = Int(item.quantity)
                     expirationDate = item.expirationDate ?? Date()
                     notes = item.notes ?? ""
                 }
             }
-            
         }
     }
 }

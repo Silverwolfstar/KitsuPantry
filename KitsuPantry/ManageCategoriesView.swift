@@ -2,7 +2,7 @@
 //  ManageCategoriesView.swift
 //  KitsuPantry
 //
-//  Created by Silver on 7/29/25.
+//  Created by Silver on 7/30/25.
 //
 
 import SwiftUI
@@ -10,80 +10,54 @@ import CoreData
 
 struct ManageCategoriesView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var categories: [String]
-    let defaultCategories: Set<String> = ["All", "Fridge", "Freezer", "Pantry"]
-
-    @State private var renamingCategory: String? = nil
-    @State private var newName = ""
+    @Binding var categories: [CategoryEntity]
+    @State private var newCategoryName: String = ""
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(categories, id: \.self) { category in
-                    HStack {
-                        if defaultCategories.contains(category) {
-                            Text(category)
-                        } else if renamingCategory == category {
-                            TextField("New name", text: $newName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            Button("Save") {
-                                renameCategory(old: category, new: newName)
-                                renamingCategory = nil
-                            }
-                        } else {
-                            Text(category)
-                            Spacer()
-                            Button("Rename") {
-                                renamingCategory = category
-                                newName = category
-                            }
-                            .buttonStyle(BorderlessButtonStyle())
-                            Button(role: .destructive) {
-                                deleteCategory(category)
-                            } label: {
-                                Image(systemName: "trash")
-                            }
-                        }
+        Form {
+            Section(header: Text("Add New Category")) {
+                TextField("New Category Name", text: $newCategoryName)
+
+                Button("Add") {
+                    let trimmed = newCategoryName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !trimmed.isEmpty,
+                          !categories.contains(where: { $0.name == trimmed }) else { return }
+
+                    let newCategory = CategoryEntity(context: viewContext)
+                    newCategory.name = trimmed
+
+                    do {
+                        try viewContext.save()
+                        categories.append(newCategory)
+                        newCategoryName = ""
+                    } catch {
+                        print("Failed to save category: \(error)")
                     }
                 }
+                .disabled(newCategoryName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-            .navigationTitle("Manage Tabs")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    }
+
+            Section(header: Text("Current Categories")) {
+                ForEach(categories.filter { $0.name != "All" }, id: \.self) { category in
+                    Text(category.name ?? "Unnamed")
                 }
+                .onDelete(perform: deleteCategory)
             }
         }
+        .navigationTitle("Manage Categories")
     }
 
-    private func renameCategory(old: String, new: String) {
-        if new.isEmpty || categories.contains(new) { return }
-        for item in try! viewContext.fetch(FoodItemEntity.fetchRequest()) as! [FoodItemEntity] {
-            if item.location == old {
-                item.location = new
-            }
-        }
-        if let index = categories.firstIndex(of: old) {
-            categories[index] = new
-        }
-        try? viewContext.save()
-    }
-
-    private func deleteCategory(_ category: String) {
-        let fallback = "Misc"
-        if !categories.contains(fallback) {
-            categories.append(fallback)
+    private func deleteCategory(at offsets: IndexSet) {
+        for index in offsets {
+            let category = categories[index]
+            viewContext.delete(category)
         }
 
-        for item in try! viewContext.fetch(FoodItemEntity.fetchRequest()) as! [FoodItemEntity] {
-            if item.location == category {
-                item.location = fallback
-            }
+        do {
+            try viewContext.save()
+            categories.remove(atOffsets: offsets)
+        } catch {
+            print("Failed to delete category: \(error)")
         }
-
-        categories.removeAll { $0 == category }
-        try? viewContext.save()
     }
 }
