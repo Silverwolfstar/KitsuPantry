@@ -86,13 +86,19 @@ struct ItemsListView: View {
                 }
                 .onDelete(perform: deleteItems)
             }
-            .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView(categories: $categories)) {
                         Image(systemName: "slider.horizontal.3")
                     }
                 }
+
+                ToolbarItem(placement: .principal) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                }
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         activeSheet = .add(defaultLocation: defaultLocationForAdd)
@@ -101,6 +107,7 @@ struct ItemsListView: View {
                     }
                 }
             }
+
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
                 case .add(let defaultLoc):
