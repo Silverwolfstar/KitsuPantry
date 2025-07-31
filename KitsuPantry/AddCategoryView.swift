@@ -12,7 +12,7 @@ struct AddCategoryView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.managedObjectContext) private var viewContext
 
-    @Binding var categories: [CategoryEntity]
+    @Binding var categories: [LocationEntity]
     @State private var newCategoryName: String = ""
 
     var body: some View {
@@ -27,7 +27,7 @@ struct AddCategoryView: View {
                         return
                     }
 
-                    let newCategory = CategoryEntity(context: viewContext)
+                    let newCategory = LocationEntity(context: viewContext)
                     newCategory.name = trimmed
 
                     try? viewContext.save()

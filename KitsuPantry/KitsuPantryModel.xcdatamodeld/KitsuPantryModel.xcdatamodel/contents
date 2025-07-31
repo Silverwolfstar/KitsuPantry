@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="CategoryEntity" representedClassName="CategoryEntity" syncable="YES" codeGenerationType="class">
-        <attribute name="isDefault" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="isProtected" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="name" attributeType="String"/>
-        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FoodItemEntity" inverseName="category" inverseEntity="FoodItemEntity"/>
-    </entity>
     <entity name="FoodItemEntity" representedClassName="FoodItemEntity" syncable="YES" codeGenerationType="class">
         <attribute name="expirationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="location" optional="YES" attributeType="String" defaultValueString="Fridge"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="quantity" attributeType="Double" defaultValueString="1" usesScalarValueType="YES"/>
-        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CategoryEntity" inverseName="items" inverseEntity="CategoryEntity"/>
+        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocationEntity" inverseName="items" inverseEntity="LocationEntity"/>
+    </entity>
+    <entity name="LocationEntity" representedClassName="LocationEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="isDefault" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isProtected" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FoodItemEntity" inverseName="location" inverseEntity="FoodItemEntity"/>
     </entity>
 </model>

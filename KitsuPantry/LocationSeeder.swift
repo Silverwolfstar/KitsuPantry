@@ -1,5 +1,5 @@
 //
-//  CategorySeeder.swift
+//  LocationSeeder.swift
 //  KitsuPantry
 //
 //  Created by Silver on 7/28/25.
@@ -7,8 +7,8 @@
 
 import CoreData
 
-func seedDefaultCategories(context: NSManagedObjectContext) {
-    let request: NSFetchRequest<CategoryEntity> = CategoryEntity.fetchRequest()
+func seedDefaultLocations(context: NSManagedObjectContext) {
+    let request: NSFetchRequest<LocationEntity> = LocationEntity.fetchRequest()
 
     do {
         let count = try context.count(for: request)
@@ -21,15 +21,15 @@ func seedDefaultCategories(context: NSManagedObjectContext) {
             ]
 
             for (name, isDefault, isProtected) in defaults {
-                let category = CategoryEntity(context: context)
-                category.name = name
-                category.isDefault = isDefault
-                category.isProtected = isProtected
+                let location = LocationEntity(context: context)
+                location.name = name
+                location.isDefault = isDefault
+                location.isProtected = isProtected
             }
 
             try context.save()
         }
     } catch {
-        print("Failed to seed categories: \(error)")
+        print("Failed to seed locations: \(error)")
     }
 }

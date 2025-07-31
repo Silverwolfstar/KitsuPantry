@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Binding var categories: [CategoryEntity]
+    @Binding var locations: [LocationEntity]
     @AppStorage("highlightExpired") private var highlightExpired = true
     @AppStorage("highlightExpiringSoon") private var highlightExpiringSoon = true
     @AppStorage("suppressDuplicatePopups") private var suppressDuplicatePopups = false
@@ -26,9 +26,9 @@ struct SettingsView: View {
 //                Stepper("Default Quantity: \(defaultQuantity)", value: $defaultQuantity, in: 1...100)
             }
 
-            Section(header: Text("Tabs & Categories")) {
+            Section(header: Text("Tabs & Locations")) {
                 NavigationLink("Manage Tabs") {
-                    ManageCategoriesView(categories: $categories)
+                    ManageLocationsView(locations: $locations)
                 }
             }
             

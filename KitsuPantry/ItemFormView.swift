@@ -17,14 +17,14 @@ struct ItemFormView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
 
-    @Binding var categories: [CategoryEntity]
+    @Binding var locations: [LocationEntity]
 
     // Form fields
     @State private var name = ""
     @State private var quantity: Double = 1
     @State private var expirationDate = Date()
     @State private var notes = ""
-    @State private var selectedCategory: CategoryEntity?
+    @State private var selectedLocation: LocationEntity?
     @State private var quantityText: String = "1"
 
     // Focus management
@@ -37,9 +37,9 @@ struct ItemFormView: View {
         }
     }
     
-    private var sortedCategories: [CategoryEntity] {
-        let all = categories.first(where: { $0.name == "All" })
-        let others = categories.filter { $0.name != "All" }
+    private var sortedLocations: [LocationEntity] {
+        let all = locations.first(where: { $0.name == "All" })
+        let others = locations.filter { $0.name != "All" }
             .sorted { ($0.name ?? "") < ($1.name ?? "") }
         return (all != nil) ? [all!] + others : others
     }
@@ -95,9 +95,9 @@ struct ItemFormView: View {
             Form {
                 Section(header: Text("Item Info")) {
                     TextField("Name", text: $name)
-                    Picker("Category", selection: $selectedCategory) {
-                        Text("Uncategorized").tag(nil as CategoryEntity?)
-                        ForEach(sortedCategories.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as CategoryEntity?)
+                    Picker("Location", selection: $selectedLocation) {
+                        Text("Miscellaneous").tag(nil as LocationEntity?)
+                        ForEach(sortedLocations.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
                         }
                     }
 
@@ -157,7 +157,7 @@ struct ItemFormView: View {
                         }
 
                         item.name = name
-                        item.category = selectedCategory
+                        item.location = selectedLocation
                         guard let parsedQuantity = Double(quantityText),
                               parsedQuantity > 0 else {
                             return  // Don't save if empty or zero
@@ -183,29 +183,21 @@ struct ItemFormView: View {
                 switch mode {
                 case .add(let defaultLoc):
                     if let loc = defaultLoc {
-                        selectedCategory = categories.first(where: { $0.name == loc })
+                        selectedLocation = locations.first(where: { $0.name == loc })
                     } else {
-                        selectedCategory = nil
+                        selectedLocation = nil
                     }
                     quantityText = "1"
                 case .edit(let item):
                     name = item.name ?? ""
-                    selectedCategory = item.category
+                    selectedLocation = item.location
                     expirationDate = item.expirationDate ?? Date()
                     notes = item.notes ?? ""
                     
                     //quantity formatting
                     quantity = Double(item.quantity)
-                    print("Loaded quantity:", item.quantity)
-
                     quantityText = String(format: "%.2f", item.quantity)
                         .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
-                    
-//                    if let formatted = quantityFormatter.string(from: NSNumber(value: item.quantity)) {
-//                        quantityText = formatted
-//                    } else {
-//                        quantityText = "1"
-//                    }
                 }
             }
         }

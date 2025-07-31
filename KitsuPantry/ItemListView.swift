@@ -10,13 +10,13 @@ import CoreData
 
 enum ItemFilter {
     case all
-    case category(CategoryEntity)
+    case location(LocationEntity)
 }
 
 struct ItemsListView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-    @Binding var categories: [CategoryEntity]
+    @Binding var locations: [LocationEntity]
 
     @FetchRequest private var items: FetchedResults<FoodItemEntity>
 
@@ -38,8 +38,10 @@ struct ItemsListView: View {
     private let title: String
     private let defaultLocationForAdd: String?
 
-    init(filter: ItemFilter, title: String, categories: Binding<[CategoryEntity]>) {
+    init(filter: ItemFilter, title: String, locations: Binding<[LocationEntity]>) {
         self.title = title
+        self._locations = locations
+
         switch filter {
         case .all:
             _items = FetchRequest(
@@ -48,19 +50,17 @@ struct ItemsListView: View {
                 animation: .default
             )
             self.defaultLocationForAdd = nil
-            self._categories = categories
-        case .category(let category):
+        case .location(let location):
             _items = FetchRequest(
                 entity: FoodItemEntity.entity(),
                 sortDescriptors: [NSSortDescriptor(keyPath: \FoodItemEntity.expirationDate, ascending: true)],
-                predicate: NSPredicate(format: "category == %@", category),
+                predicate: NSPredicate(format: "location == %@", location), // ✅ new relationship key
                 animation: .default
             )
-            self.defaultLocationForAdd = category.name
-
-            self._categories = categories
+            self.defaultLocationForAdd = location.name
         }
     }
+
 
     var body: some View {
         NavigationView {
@@ -70,11 +70,11 @@ struct ItemsListView: View {
                         Text(item.name ?? "Unnamed")
                             .font(.headline)
 
-                        let categoryName = item.category?.name ?? "Unknown"
+                        let locationName = item.location?.name ?? "Unknown"
                         let formattedQty = String(format: "%.2f", item.quantity)
                             .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
 
-                        Text("\(categoryName) — Qty: \(formattedQty)")
+                        Text("\(locationName) — Qty: \(formattedQty)")
 
                         if let date = item.expirationDate {
                             Text("Expires: \(formatted(date: date))")
@@ -98,7 +98,7 @@ struct ItemsListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView(categories: $categories)) {
+                    NavigationLink(destination: SettingsView(locations: $locations)) {
                         Image(systemName: "slider.horizontal.3")
                     }
                 }
@@ -120,9 +120,9 @@ struct ItemsListView: View {
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
                 case .add(let defaultLoc):
-                    ItemFormView(mode: .add(defaultLocation: defaultLoc), categories: $categories)
+                    ItemFormView(mode: .add(defaultLocation: defaultLoc), locations: $locations)
                 case .edit(let item):
-                    ItemFormView(mode: .edit(item), categories: $categories)
+                    ItemFormView(mode: .edit(item), locations: $locations)
                 }
             }
         }
