@@ -58,22 +58,28 @@ struct ItemFormView: View {
     private func cleanDecimalInput(_ input: String) -> String {
         // Only allow digits and one decimal point
         var filtered = input.filter { "0123456789.".contains($0) }
-        
+
         // Prevent multiple dots
         let components = filtered.split(separator: ".", maxSplits: 2, omittingEmptySubsequences: false)
         if components.count > 2 {
             filtered = components[0] + "." + components[1]
         }
-        
+
         // Limit to two decimal places
         if let dotIndex = filtered.firstIndex(of: ".") {
             let afterDot = filtered[filtered.index(after: dotIndex)...]
             if afterDot.count > 2 {
                 let prefix = filtered[..<filtered.index(after: dotIndex)]
                 let suffix = afterDot.prefix(2)
-                return String(prefix + suffix)
+                filtered = String(prefix + suffix)
             }
         }
+
+        // Cap total length to 8 characters
+        if filtered.count > 8 {
+            filtered = String(filtered.prefix(8))
+        }
+
         return filtered
     }
 
@@ -139,7 +145,7 @@ struct ItemFormView: View {
 
                         item.name = name
                         item.category = selectedCategory
-                        if let parsedQuantity = Double(quantityText), parsedQuantity >= 0 {
+                        if let parsedQuantity = Double(quantityText) {
                             item.quantity = Double(round(100 * parsedQuantity) / 100)
                         } else {
                             item.quantity = 1  // fallback default
