@@ -16,6 +16,7 @@ struct ItemFormView: View {
     let mode: FormMode
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
 
     @Binding var locations: [LocationEntity]
 
@@ -133,14 +134,21 @@ struct ItemFormView: View {
                         Text("Notes")
                             .font(.caption)
                             .foregroundColor(.gray)
-                        TextEditor(text: $notes)
-                            .frame(minHeight: 80)
-                            .padding(4)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .stroke(Color.gray.opacity(0.3))
-                            )
-                            .background(Color.white)
+
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(colorScheme == .dark ? Color(white: 0.15) : Color.white)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(Color.gray.opacity(0.3))
+                                )
+
+                            TextEditor(text: $notes)
+                                .padding(4)
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
+                                .background(Color.clear) // prevent TextEditor from overriding ZStack
+                        }
+                        .frame(minHeight: 80)
                     }
                 }
             }
