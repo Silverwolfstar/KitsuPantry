@@ -83,6 +83,13 @@ struct ItemFormView: View {
         return filtered
     }
 
+    private var quantityIsValid: Bool {
+        if let value = Double(quantityText), value > 0 {
+            return true
+        }
+        return false
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -112,6 +119,12 @@ struct ItemFormView: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         quantityFieldIsFocused = true
+                    }
+                    
+                    if !quantityIsValid && !quantityText.isEmpty {
+                        Text("Quantity must be greater than 0")
+                            .font(.caption)
+                            .foregroundColor(.red)
                     }
 
                     DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
@@ -145,18 +158,20 @@ struct ItemFormView: View {
 
                         item.name = name
                         item.category = selectedCategory
-                        if let parsedQuantity = Double(quantityText) {
-                            item.quantity = Double(round(100 * parsedQuantity) / 100)
-                        } else {
-                            item.quantity = 1  // fallback default
+                        guard let parsedQuantity = Double(quantityText),
+                              parsedQuantity > 0 else {
+                            return  // Don't save if empty or zero
                         }
+                        item.quantity = Double(round(100 * parsedQuantity) / 100)
                         item.expirationDate = expirationDate
                         item.notes = notes
 
                         try? viewContext.save()
                         dismiss()
                     }
-                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(
+                        name.trimmingCharacters(in: .whitespaces).isEmpty || !quantityIsValid
+                    )
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
