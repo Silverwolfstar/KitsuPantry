@@ -25,6 +25,7 @@ struct ItemFormView: View {
     @State private var expirationDate = Date()
     @State private var notes = ""
     @State private var selectedCategory: CategoryEntity?
+    @State private var quantityText: String = "1"
 
     // Focus management
     @FocusState private var quantityFieldIsFocused: Bool
@@ -43,13 +44,37 @@ struct ItemFormView: View {
         return (all != nil) ? [all!] + others : others
     }
 
-    // If it crashes again I will cry
     private var quantityFormatter: NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
-        formatter.minimum = 0
-        formatter.maximumFractionDigits = 0
+        formatter.minimum = 0.01
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2 // Allows e.g. 1.5 or 1.25
+        formatter.alwaysShowsDecimalSeparator = false
+        formatter.usesSignificantDigits = false
         return formatter
+    }
+    
+    private func cleanDecimalInput(_ input: String) -> String {
+        // Only allow digits and one decimal point
+        var filtered = input.filter { "0123456789.".contains($0) }
+        
+        // Prevent multiple dots
+        let components = filtered.split(separator: ".", maxSplits: 2, omittingEmptySubsequences: false)
+        if components.count > 2 {
+            filtered = components[0] + "." + components[1]
+        }
+        
+        // Limit to two decimal places
+        if let dotIndex = filtered.firstIndex(of: ".") {
+            let afterDot = filtered[filtered.index(after: dotIndex)...]
+            if afterDot.count > 2 {
+                let prefix = filtered[..<filtered.index(after: dotIndex)]
+                let suffix = afterDot.prefix(2)
+                return String(prefix + suffix)
+            }
+        }
+        return filtered
     }
 
     var body: some View {
@@ -57,20 +82,26 @@ struct ItemFormView: View {
             Form {
                 Section(header: Text("Item Info")) {
                     TextField("Name", text: $name)
-
                     Picker("Category", selection: $selectedCategory) {
-                        ForEach(sortedCategories, id: \.self) { cat in
-                            Text(cat.name ?? "Unnamed").tag(cat as CategoryEntity?)
+                        Text("Uncategorized").tag(nil as CategoryEntity?)
+                        ForEach(sortedCategories.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as CategoryEntity?)
                         }
                     }
 
                     HStack {
                         Text("Quantity")
                         Spacer()
-                        TextField("", value: $quantity, formatter: quantityFormatter)
-                            .frame(width: 60)
-                            .keyboardType(.numberPad)
+                        TextField("", text: $quantityText)
+                            .frame(width: 80)
+                            .keyboardType(.decimalPad)
                             .focused($quantityFieldIsFocused)
+                            .onChange(of: quantityText) {
+                                let cleaned = cleanDecimalInput(quantityText)
+                                    quantityText = cleaned
+                                    if let num = Double(cleaned) {
+                                        quantity = num
+                                    }
+                                }
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -108,7 +139,11 @@ struct ItemFormView: View {
 
                         item.name = name
                         item.category = selectedCategory
-                        item.quantity = Int16(quantity)
+                        if let parsedQuantity = Double(quantityText), parsedQuantity >= 0 {
+                            item.quantity = Double(round(100 * parsedQuantity) / 100)
+                        } else {
+                            item.quantity = 1  // fallback default
+                        }
                         item.expirationDate = expirationDate
                         item.notes = notes
 
@@ -129,14 +164,27 @@ struct ItemFormView: View {
                     if let loc = defaultLoc {
                         selectedCategory = categories.first(where: { $0.name == loc })
                     } else {
-                        selectedCategory = categories.first(where: { !($0.name ?? "").elementsEqual("All") })
+                        selectedCategory = nil
                     }
+                    quantityText = "1"
                 case .edit(let item):
                     name = item.name ?? ""
                     selectedCategory = item.category
-                    quantity = Double(item.quantity)
                     expirationDate = item.expirationDate ?? Date()
                     notes = item.notes ?? ""
+                    
+                    //quantity formatting
+                    quantity = Double(item.quantity)
+                    print("Loaded quantity:", item.quantity)
+
+                    quantityText = String(format: "%.2f", item.quantity)
+                        .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
+                    
+//                    if let formatted = quantityFormatter.string(from: NSNumber(value: item.quantity)) {
+//                        quantityText = formatted
+//                    } else {
+//                        quantityText = "1"
+//                    }
                 }
             }
         }

@@ -71,8 +71,10 @@ struct ItemsListView: View {
                             .font(.headline)
 
                         let categoryName = item.category?.name ?? "Unknown"
-                        let qty = Int(item.quantity)
-                        Text("\(categoryName) — Qty: \(qty)")
+                        let formattedQty = String(format: "%.2f", item.quantity)
+                            .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
+
+                        Text("\(categoryName) — Qty: \(formattedQty)")
 
                         if let date = item.expirationDate {
                             Text("Expires: \(formatted(date: date))")

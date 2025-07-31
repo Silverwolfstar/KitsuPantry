@@ -45,10 +45,17 @@ struct ManageCategoriesView: View {
             }
 
             Section(header: Text("Current Categories")) {
-                ForEach(sortedCategories.filter { $0.name != "All" }, id: \.self) { category in
+                let filteredCategories = categories.filter { $0.name != "All" }
+                
+                ForEach(filteredCategories, id: \.self) { category in
                     Text(category.name ?? "Unnamed")
                 }
-                .onDelete(perform: deleteCategory)
+                .onDelete { offsets in
+                    let originalIndexes = offsets.map { offset in
+                        categories.firstIndex(of: filteredCategories[offset])!
+                    }
+                    deleteCategory(at: IndexSet(originalIndexes))
+                }
             }
         }
         .navigationTitle("Manage Categories")
