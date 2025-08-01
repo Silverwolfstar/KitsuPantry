@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Binding var locations: [LocationEntity]
     @AppStorage("highlightExpired") private var highlightExpired = true
     @AppStorage("highlightExpiringSoon") private var highlightExpiringSoon = true
     @AppStorage("suppressDuplicatePopups") private var suppressDuplicatePopups = false
     @AppStorage("defaultQuantity") private var defaultQuantity = 1
+    
+    @State private var isManagingTabs = false
+    @State private var isManagingLocations = false
 
     var body: some View {
         Form {
@@ -27,8 +29,8 @@ struct SettingsView: View {
             }
 
             Section(header: Text("Tabs & Locations")) {
-                NavigationLink("Manage Tabs") {
-                    ManageLocationsView(locations: $locations)
+                Button("Manage Tabs") {
+                    isManagingLocations = true
                 }
             }
             
@@ -38,5 +40,8 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .navigationDestination(isPresented: $isManagingLocations) {
+            ManageLocationsView()
+        }
     }
 }

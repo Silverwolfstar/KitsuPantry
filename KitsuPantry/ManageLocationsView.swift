@@ -10,12 +10,17 @@ import CoreData
 
 struct ManageLocationsView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Binding var locations: [LocationEntity]
+
+    @FetchRequest(
+        entity: LocationEntity.entity(),
+        sortDescriptors: [NSSortDescriptor(keyPath: \LocationEntity.name, ascending: true)],
+        animation: .default
+    ) private var locations: FetchedResults<LocationEntity>
+
     @State private var newLocationName: String = ""
-    
     @State private var locationBeingRenamed: LocationEntity?
     @State private var editedName: String = ""
-    
+
     private var sortedLocations: [LocationEntity] {
         let all = locations.first(where: { $0.name == "All" })
         let others = locations.filter { $0.name != "All" }
@@ -38,7 +43,6 @@ struct ManageLocationsView: View {
 
                     do {
                         try viewContext.save()
-                        locations.append(newLocation)
                         newLocationName = ""
                     } catch {
                         print("Failed to save location: \(error)")
@@ -48,28 +52,31 @@ struct ManageLocationsView: View {
             }
 
             Section(header: Text("Current Locations")) {
-                let filteredLocations = locations.filter { $0.name != "All" }
-                
+                let filteredLocations = sortedLocations.filter { $0.name != "All" }
+
                 ForEach(filteredLocations, id: \.self) { location in
                     if locationBeingRenamed == location {
                         HStack {
                             TextField("New name", text: $editedName)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                            
-                            Button(action: confirmRename) {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.green)
-                                    .padding(6)
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
-                            Button(action: cancelRename) {
-                                Image(systemName: "xmark")
-                                    .foregroundColor(.red)
-                                    .padding(6)
+                            HStack(spacing: 12) {
+                                Button(action: confirmRename) {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.green)
+                                        .padding(6)
+                                }
+                                .buttonStyle(BorderlessButtonStyle()) // safer than Plain here
+                                .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                                Button(action: cancelRename) {
+                                    Image(systemName: "xmark")
+                                        .foregroundColor(.red)
+                                        .padding(6)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
                             }
-                            .buttonStyle(PlainButtonStyle())
+                            .contentShape(Rectangle()) // ensures only the buttons are tappable
                         }
                     } else {
                         HStack {
@@ -79,40 +86,35 @@ struct ManageLocationsView: View {
                                 locationBeingRenamed = location
                                 editedName = location.name ?? ""
                             }
-                            .buttonStyle(BorderlessButtonStyle()) // Prevents row-wide tap hijack
+                            .buttonStyle(BorderlessButtonStyle())
                         }
                     }
                 }
-
-                .onDelete { offsets in
-                    let originalIndexes = offsets.map { offset in
-                        locations.firstIndex(of: filteredLocations[offset])!
-                    }
-                    deleteLocation(at: IndexSet(originalIndexes))
-                }
+                .onDelete(perform: deleteLocation)
             }
         }
         .navigationTitle("Manage Locations")
     }
 
     private func deleteLocation(at offsets: IndexSet) {
-        for index in offsets {
-            let location = locations[index]
+        let filteredLocations = sortedLocations.filter { $0.name != "All" }
+
+        for offset in offsets {
+            let location = filteredLocations[offset]
             viewContext.delete(location)
         }
 
         do {
             try viewContext.save()
-            locations.remove(atOffsets: offsets)
         } catch {
             print("Failed to delete location: \(error)")
         }
     }
-    
+
     private func confirmRename() {
         guard let location = locationBeingRenamed else { return }
         let trimmed = editedName.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard !trimmed.isEmpty,
               trimmed != "All",
               !locations.contains(where: { $0.name == trimmed && $0 != location }) else {
@@ -125,7 +127,7 @@ struct ManageLocationsView: View {
         } catch {
             print("Rename failed: \(error)")
         }
-        
+
         locationBeingRenamed = nil
         editedName = ""
     }
@@ -134,5 +136,4 @@ struct ManageLocationsView: View {
         locationBeingRenamed = nil
         editedName = ""
     }
-
 }

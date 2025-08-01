@@ -15,7 +15,7 @@ enum ItemFilter {
 
 struct ItemsListView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    
+    @State private var isManagingTabs = false
     @Binding var locations: [LocationEntity]
 
     @FetchRequest private var items: FetchedResults<FoodItemEntity>
@@ -63,7 +63,7 @@ struct ItemsListView: View {
 
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(items) { item in
                     VStack(alignment: .leading, spacing: 4) {
@@ -98,7 +98,9 @@ struct ItemsListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView(locations: $locations)) {
+                    Button {
+                        isManagingTabs = true
+                    } label: {
                         Image(systemName: "slider.horizontal.3")
                     }
                 }
@@ -124,6 +126,9 @@ struct ItemsListView: View {
                 case .edit(let item):
                     ItemFormView(mode: .edit(item), locations: $locations)
                 }
+            }
+            .navigationDestination(isPresented: $isManagingTabs) {
+                SettingsView()
             }
         }
     }
