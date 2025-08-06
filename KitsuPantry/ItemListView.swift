@@ -65,44 +65,52 @@ struct ItemsListView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(items) { item in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.name ?? "Unnamed")
-                            .font(.headline)
+            ZStack(alignment: .top) {
+                Color.clear
 
-                        let locationName = item.location?.name ?? "Unknown"
-                        let formattedQty = String(format: "%.2f", item.quantity)
-                            .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
+                List {
+                    ForEach(items) { item in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.name ?? "Unnamed")
+                                .font(.headline)
 
-                        Text("\(locationName) — Qty: \(formattedQty)")
+                            let locationName = item.location?.name ?? "Unknown"
+                            let formattedQty = String(format: "%.2f", item.quantity)
+                                .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
 
-                        if let date = item.expirationDate {
-                            Text("Expires: \(formatted(date: date))")
-                                .font(.caption)
-                                .foregroundColor(.primary)
+                            Text("\(locationName) — Qty: \(formattedQty)")
+
+                            if let date = item.expirationDate {
+                                Text("Expires: \(formatted(date: date))")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                            }
+
+                            if showObtainedDate, let obtained = item.obtainedDate {
+                                Text("Obtained: \(formatted(date: obtained))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
+                               !notes.isEmpty {
+                                Text("Notes:\n\(notes)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, 2)
+                            }
                         }
-                        
-                        if showObtainedDate, let obtained = item.obtainedDate {
-                            Text("Obtained: \(formatted(date: obtained))")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-
-                        if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
-                           !notes.isEmpty {
-                            Text("Notes:\n\(notes)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .padding(.top, 2)
+                        .onTapGesture {
+                            activeSheet = .edit(item)
                         }
                     }
-                    .onTapGesture {
-                        activeSheet = .edit(item)
-                    }
+                    .onDelete(perform: deleteItems)
                 }
-                .onDelete(perform: deleteItems)
+                .listSectionSpacing(0)
+                .padding(.top, -34)
             }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -110,12 +118,6 @@ struct ItemsListView: View {
                     } label: {
                         Image(systemName: "slider.horizontal.3")
                     }
-                }
-
-                ToolbarItem(placement: .principal) {
-                    Text(title)
-                        .font(.headline)
-                        .foregroundColor(.primary)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
