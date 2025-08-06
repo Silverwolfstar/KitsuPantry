@@ -27,29 +27,42 @@ struct ManageLocationsView: View {
             .sorted { ($0.name ?? "") < ($1.name ?? "") }
         return (all != nil) ? [all!] + others : others
     }
+    
+    private var hasReachedTabLimit: Bool {
+        locations.filter { $0.name != "All" }.count >= 5
+    }
 
     var body: some View {
         Form {
-            Section(header: Text("Add New Location")) {
-                TextField("New Location Name", text: $newLocationName)
+            if !hasReachedTabLimit {
+                Section(header: Text("Add New Location")) {
+                    TextField("New Location Name", text: $newLocationName)
 
-                Button("Add") {
-                    let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !trimmed.isEmpty,
-                          !locations.contains(where: { $0.name == trimmed }) else { return }
+                    Button("Add") {
+                        let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard !trimmed.isEmpty,
+                              !locations.contains(where: { $0.name == trimmed }) else { return }
 
-                    let newLocation = LocationEntity(context: viewContext)
-                    newLocation.name = trimmed
+                        let newLocation = LocationEntity(context: viewContext)
+                        newLocation.name = trimmed
 
-                    do {
-                        try viewContext.save()
-                        newLocationName = ""
-                    } catch {
-                        print("Failed to save location: \(error)")
+                        do {
+                            try viewContext.save()
+                            newLocationName = ""
+                        } catch {
+                            print("Failed to save location: \(error)")
+                        }
                     }
+                    .disabled(newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
-                .disabled(newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            } else {
+                Section {
+                    Text("Maximum of 5 custom tabs reached.")
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
             }
+
 
             Section(header: Text("Current Locations")) {
                 let filteredLocations = sortedLocations.filter { $0.name != "All" }
