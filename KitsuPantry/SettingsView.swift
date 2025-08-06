@@ -12,6 +12,7 @@ struct SettingsView: View {
     @AppStorage("highlightExpiringSoon") private var highlightExpiringSoon = true
     @AppStorage("suppressDuplicatePopups") private var suppressDuplicatePopups = false
     @AppStorage("defaultQuantity") private var defaultQuantity = 1
+    @AppStorage("showObtainedDate") private var showObtainedDate = true
     
     @State private var isManagingTabs = false
     @State private var isManagingLocations = false
@@ -21,6 +22,7 @@ struct SettingsView: View {
             Section(header: Text("Visual Options")) {
                 Toggle("Highlight Expired Items", isOn: $highlightExpired)
                 Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)
+                Toggle("Show Obtained Date Field", isOn: $showObtainedDate)
             }
 
             Section(header: Text("Behavior")) {

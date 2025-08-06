@@ -17,6 +17,7 @@ struct ItemsListView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @State private var isManagingTabs = false
     @Binding var locations: [LocationEntity]
+    @AppStorage("showObtainedDate") private var showObtainedDate = true
 
     @FetchRequest private var items: FetchedResults<FoodItemEntity>
 
@@ -79,7 +80,13 @@ struct ItemsListView: View {
                         if let date = item.expirationDate {
                             Text("Expires: \(formatted(date: date))")
                                 .font(.caption)
-                                .foregroundColor(.gray)
+                                .foregroundColor(.primary)
+                        }
+                        
+                        if showObtainedDate, let obtained = item.obtainedDate {
+                            Text("Obtained: \(formatted(date: obtained))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
 
                         if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),

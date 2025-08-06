@@ -4,6 +4,7 @@
         <attribute name="expirationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="obtainedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="quantity" attributeType="Double" defaultValueString="1" usesScalarValueType="YES"/>
         <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocationEntity" inverseName="items" inverseEntity="LocationEntity"/>
     </entity>

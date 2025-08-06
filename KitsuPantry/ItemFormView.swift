@@ -17,6 +17,9 @@ struct ItemFormView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    
+    @AppStorage("showObtainedDate") private var showObtainedDate = true
+    @State private var obtainedDate = Date()
 
     @Binding var locations: [LocationEntity]
 
@@ -130,6 +133,10 @@ struct ItemFormView: View {
                     }
 
                     DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
+                    
+                    if showObtainedDate {
+                        DatePicker("Obtained Date", selection: $obtainedDate, displayedComponents: .date)
+                    }
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Notes")
@@ -173,6 +180,7 @@ struct ItemFormView: View {
                         }
                         item.quantity = Double(round(100 * parsedQuantity) / 100)
                         item.expirationDate = expirationDate
+                        item.obtainedDate = obtainedDate
                         item.notes = notes
 
                         try? viewContext.save()
@@ -197,10 +205,12 @@ struct ItemFormView: View {
                         selectedLocation = nil
                     }
                     quantityText = "1"
+                    obtainedDate = Date()
                 case .edit(let item):
                     name = item.name ?? ""
                     selectedLocation = item.location
                     expirationDate = item.expirationDate ?? Date()
+                    obtainedDate = item.obtainedDate ?? Date()
                     notes = item.notes ?? ""
                     
                     //quantity formatting
