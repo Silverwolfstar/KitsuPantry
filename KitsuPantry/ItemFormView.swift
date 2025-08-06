@@ -108,6 +108,7 @@ struct ItemFormView: View {
                         TextField("", text: $quantityText)
                             .frame(width: 80)
                             .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
                             .focused($quantityFieldIsFocused)
                             .onChange(of: quantityText) {
                                 let cleaned = cleanDecimalInput(quantityText)
