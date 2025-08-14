@@ -20,6 +20,8 @@ struct ManageLocationsView: View {
     @State private var newLocationName: String = ""
     @State private var locationBeingRenamed: LocationEntity?
     @State private var editedName: String = ""
+    @State private var addConflictError = false
+    @State private var renameConflictError = false
 
     private var sortedLocations: [LocationEntity] {
         let all = locations.first(where: { $0.name == "All" })
@@ -38,11 +40,19 @@ struct ManageLocationsView: View {
                 Section(header: Text("Add New Location")) {
                     TextField("New Location Name", text: $newLocationName)
 
+                    if addConflictError {
+                        Text("You cannot name a tab \"All\" or reuse an existing name.")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                    
                     Button("Add") {
                         let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard !trimmed.isEmpty,
-                              !locations.contains(where: { $0.name == trimmed }) else { return }
-
+                        if trimmed.lowercased() == "all" || locations.contains(where: { $0.name == trimmed }) {
+                            addConflictError = true
+                            return
+                        }
+                        addConflictError = false
                         let newLocation = LocationEntity(context: viewContext)
                         newLocation.name = trimmed
 
@@ -54,6 +64,7 @@ struct ManageLocationsView: View {
                         }
                     }
                     .disabled(newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
                 }
             } else {
                 Section {
@@ -90,6 +101,11 @@ struct ManageLocationsView: View {
                                 .buttonStyle(BorderlessButtonStyle())
                             }
                             .contentShape(Rectangle()) // ensures only the buttons are tappable
+                        }
+                        if renameConflictError {
+                            Text("Cannot rename to \"All\" or an existing name.")
+                                .font(.caption)
+                                .foregroundColor(.red)
                         }
                     } else {
                         HStack {
@@ -128,11 +144,15 @@ struct ManageLocationsView: View {
         guard let location = locationBeingRenamed else { return }
         let trimmed = editedName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        guard !trimmed.isEmpty,
-              trimmed != "All",
-              !locations.contains(where: { $0.name == trimmed && $0 != location }) else {
+        guard !trimmed.isEmpty else { return }
+
+        if trimmed.lowercased() == "all" ||
+           locations.contains(where: { $0.name == trimmed && $0 != location }) {
+            renameConflictError = true
             return
         }
+
+        renameConflictError = false
 
         location.name = trimmed
         do {
