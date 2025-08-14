@@ -66,8 +66,8 @@ struct ItemsListView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                //Color.clear
-                Color.orange
+                Color(red: 0.72, green: 0.78, blue: 0.89)
+
 
                 List {
                     ForEach(items) { item in
@@ -125,6 +125,9 @@ struct ItemsListView: View {
             }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color(white: 0.27), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
