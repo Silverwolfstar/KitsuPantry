@@ -34,7 +34,8 @@ struct ContentView: View {
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
-            .padding()
+            .padding(.horizontal)
+            .padding(.bottom, 0)
 
             ItemsListView(
                 filter: selectedLocation == nil || selectedLocation?.name == "All"

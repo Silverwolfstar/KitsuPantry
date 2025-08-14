@@ -112,6 +112,10 @@ struct ItemsListView: View {
                             .padding(.vertical, 6)
 
                         }
+                        .contentShape(Rectangle()) // ✅ Makes entire row tappable
+                        .onTapGesture {
+                            activeSheet = .edit(item)
+                        }
                         .listRowInsets(EdgeInsets()) // remove all default padding
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
@@ -143,6 +147,11 @@ struct ItemsListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                }
+                ToolbarItem(placement: .principal) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(.white)
                 }
             }
             .sheet(item: $activeSheet) { sheet in
