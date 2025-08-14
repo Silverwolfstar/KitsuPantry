@@ -66,46 +66,60 @@ struct ItemsListView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                Color.clear
+                //Color.clear
+                Color.orange
 
                 List {
                     ForEach(items) { item in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(item.name ?? "Unnamed")
-                                .font(.headline)
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(item.name ?? "Unnamed")
+                                    .font(.headline)
 
-                            let locationName = item.location?.name ?? "Unknown"
-                            let formattedQty = String(format: "%.2f", item.quantity)
-                                .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
+                                let locationName = item.location?.name ?? "Unknown"
+                                let formattedQty = String(format: "%.2f", item.quantity)
+                                    .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
 
-                            Text("\(locationName) — Qty: \(formattedQty)")
+                                Text("\(locationName) — Qty: \(formattedQty)")
 
-                            if let date = item.expirationDate {
-                                Text("Expires: \(formatted(date: date))")
-                                    .font(.caption)
-                                    .foregroundColor(.primary)
+                                if let date = item.expirationDate {
+                                    Text("Expires: \(formatted(date: date))")
+                                        .font(.caption)
+                                        .foregroundColor(.primary)
+                                }
+
+                                if showObtainedDate, let obtained = item.obtainedDate {
+                                    Text("Obtained: \(formatted(date: obtained))")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
+                                   !notes.isEmpty {
+                                    Text("Notes:\n\(notes)")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .padding(.top, 2)
+                                }
                             }
+                            .padding(10)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(Color(.systemBackground))
+                                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                            )
+                            .padding(.vertical, 6)
 
-                            if showObtainedDate, let obtained = item.obtainedDate {
-                                Text("Obtained: \(formatted(date: obtained))")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
-                               !notes.isEmpty {
-                                Text("Notes:\n\(notes)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .padding(.top, 2)
-                            }
                         }
-                        .onTapGesture {
-                            activeSheet = .edit(item)
-                        }
+                        .listRowInsets(EdgeInsets()) // remove all default padding
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     }
                     .onDelete(perform: deleteItems)
                 }
+
+                .scrollContentBackground(.hidden)
                 .listSectionSpacing(0)
                 .padding(.top, -34)
             }
