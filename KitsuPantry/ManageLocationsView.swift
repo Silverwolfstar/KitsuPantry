@@ -39,6 +39,9 @@ struct ManageLocationsView: View {
             if !hasReachedTabLimit {
                 Section(header: Text("Add New Location")) {
                     TextField("New Location Name", text: $newLocationName)
+                    .onChange(of: newLocationName, initial: false) { oldValue, newValue in
+                        addConflictError = false
+                    }
 
                     if addConflictError {
                         Text("You cannot name a tab \"All\" or reuse an existing name.")
@@ -46,22 +49,14 @@ struct ManageLocationsView: View {
                             .foregroundColor(.red)
                     }
                     
-                    Button("Add") {
-                        let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
-                        if trimmed.lowercased() == "all" || locations.contains(where: { $0.name == trimmed }) {
-                            addConflictError = true
-                            return
-                        }
-                        addConflictError = false
-                        let newLocation = LocationEntity(context: viewContext)
-                        newLocation.name = trimmed
-
-                        do {
-                            try viewContext.save()
-                            newLocationName = ""
-                        } catch {
-                            print("Failed to save location: \(error)")
-                        }
+                    Button(action: handleAddLocation) {
+                        Text("Add")
+                            .fontWeight(.semibold)
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 15)
+                            .background(Color(red: 0.40, green: 0.45, blue: 0.62))
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                     }
                     .disabled(newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
@@ -169,4 +164,26 @@ struct ManageLocationsView: View {
         locationBeingRenamed = nil
         editedName = ""
     }
+    
+    private func handleAddLocation() {
+        let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmed.lowercased() == "all" || locations.contains(where: { $0.name == trimmed }) {
+            addConflictError = true
+            return
+        }
+
+        addConflictError = false
+
+        let newLocation = LocationEntity(context: viewContext)
+        newLocation.name = trimmed
+
+        do {
+            try viewContext.save()
+            newLocationName = ""
+        } catch {
+            print("Failed to save location: \(error)")
+        }
+    }
+
 }
