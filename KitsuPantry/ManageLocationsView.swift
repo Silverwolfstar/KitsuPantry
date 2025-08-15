@@ -22,6 +22,13 @@ struct ManageLocationsView: View {
     @State private var editedName: String = ""
     @State private var addConflictError = false
     @State private var renameConflictError = false
+    
+    private var isAddDisabled: Bool {
+        let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ||
+               trimmed.lowercased() == "all" ||
+               locations.contains(where: { $0.name?.lowercased() == trimmed.lowercased() })
+    }
 
     private var sortedLocations: [LocationEntity] {
         let all = locations.first(where: { $0.name == "All" })
@@ -51,15 +58,19 @@ struct ManageLocationsView: View {
                     
                     Button(action: handleAddLocation) {
                         Text("Add")
-                            .fontWeight(.semibold)
+                            .fontWeight(.medium)
                             .padding(.vertical, 4)
                             .padding(.horizontal, 15)
-                            .background(Color(red: 0.40, green: 0.45, blue: 0.62))
+                            .background(
+                                isAddDisabled
+                                ? Color.gray.opacity(0.4)
+                                : Color(red: 0.40, green: 0.45, blue: 0.62)
+                            )
                             .foregroundColor(.white)
                             .cornerRadius(8)
+                            .animation(.easeInOut(duration: 0.2), value: isAddDisabled)
                     }
-                    .disabled(newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
+                    .disabled(isAddDisabled)
                 }
             } else {
                 Section {
@@ -185,5 +196,4 @@ struct ManageLocationsView: View {
             print("Failed to save location: \(error)")
         }
     }
-
 }
