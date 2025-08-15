@@ -95,71 +95,77 @@ struct ItemFormView: View {
     }
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Item Info")) {
-                    TextField("Name", text: $name)
-                    Picker("Location", selection: $selectedLocation) {
-                        Text("Miscellaneous").tag(nil as LocationEntity?)
-                        ForEach(sortedLocations.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
+        NavigationStack {
+            ZStack(alignment: .top){
+                Color(red: 0.72, green: 0.78, blue: 0.89)
+                    .ignoresSafeArea()
+                Form {
+                    Section(header: Text("Item Info").foregroundColor(.black)) {
+                        TextField("Name", text: $name)
+                        Picker("Location", selection: $selectedLocation) {
+                            Text("Miscellaneous").tag(nil as LocationEntity?)
+                            ForEach(sortedLocations.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
+                            }
                         }
-                    }
-
-                    HStack {
-                        Text("Quantity")
-                        Spacer()
-                        TextField("", text: $quantityText)
-                            .frame(width: 80)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                            .focused($quantityFieldIsFocused)
-                            .onChange(of: quantityText) {
-                                let cleaned = cleanDecimalInput(quantityText)
+                        
+                        HStack {
+                            Text("Quantity")
+                            Spacer()
+                            TextField("", text: $quantityText)
+                                .frame(width: 80)
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.trailing)
+                                .focused($quantityFieldIsFocused)
+                                .onChange(of: quantityText) {
+                                    let cleaned = cleanDecimalInput(quantityText)
                                     quantityText = cleaned
                                     if let num = Double(cleaned) {
                                         quantity = num
                                     }
                                 }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        quantityFieldIsFocused = true
-                    }
-                    
-                    if !quantityIsValid && !quantityText.isEmpty {
-                        Text("Quantity must be greater than 0")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-
-                    DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
-                    
-                    if showObtainedDate {
-                        DatePicker("Obtained Date", selection: $obtainedDate, displayedComponents: .date)
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Notes")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(colorScheme == .dark ? Color(white: 0.15) : Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .stroke(Color.gray.opacity(0.3))
-                                )
-
-                            TextEditor(text: $notes)
-                                .padding(4)
-                                .foregroundColor(colorScheme == .dark ? .white : .black)
-                                .background(Color.clear) // prevent TextEditor from overriding ZStack
                         }
-                        .frame(minHeight: 80)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            quantityFieldIsFocused = true
+                        }
+                        
+                        if !quantityIsValid && !quantityText.isEmpty {
+                            Text("Quantity must be greater than 0")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                        
+                        DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
+                        
+                        if showObtainedDate {
+                            DatePicker("Obtained Date", selection: $obtainedDate, displayedComponents: .date)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Notes")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(colorScheme == .dark ? Color(white: 0.15) : Color.white)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6)
+                                            .stroke(Color.gray.opacity(0.3))
+                                    )
+                                
+                                TextEditor(text: $notes)
+                                    .padding(4)
+                                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                                    .background(Color.clear) // prevent TextEditor from overriding ZStack
+                            }
+                            .frame(minHeight: 80)
+                        }
                     }
                 }
+                .scrollContentBackground(.hidden)
             }
+            
             .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -171,7 +177,7 @@ struct ItemFormView: View {
                         case .edit(let existingItem):
                             item = existingItem
                         }
-
+                        
                         item.name = name
                         item.location = selectedLocation
                         guard let parsedQuantity = Double(quantityText),
@@ -182,7 +188,7 @@ struct ItemFormView: View {
                         item.expirationDate = expirationDate
                         item.obtainedDate = obtainedDate
                         item.notes = notes
-
+                        
                         try? viewContext.save()
                         dismiss()
                     }

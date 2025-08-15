@@ -41,90 +41,96 @@ struct ManageLocationsView: View {
     }
 
     var body: some View {
-        Form {
-            if !hasReachedTabLimit {
-                Section(header: Text("Add New Location")) {
-                    TextField("New Location Name", text: $newLocationName)
-
-                    if !newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && isAddDisabled {
-                        Text("You cannot name a tab \"All\" or reuse an existing name.")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                    
-                    Button(action: handleAddLocation) {
-                        Text("Add")
-                            .fontWeight(.medium)
-                            .padding(.vertical, 4)
-                            .padding(.horizontal, 15)
-                            .background(
-                                isAddDisabled
-                                ? Color.gray.opacity(0.4)
-                                : Color(red: 0.40, green: 0.45, blue: 0.62)
-                            )
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                            .animation(.easeInOut(duration: 0.2), value: isAddDisabled)
-                    }
-                    .disabled(isAddDisabled)
-                }
-            } else {
-                Section {
-                    Text("Maximum of 5 custom tabs reached.")
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-            }
-
-
-            Section(header: Text("Current Locations")) {
-                let filteredLocations = sortedLocations.filter { $0.name != "All" }
-
-                ForEach(filteredLocations, id: \.self) { location in
-                    if locationBeingRenamed == location {
-                        HStack {
-                            TextField("New name", text: $editedName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-
-                            HStack(spacing: 12) {
-                                Button(action: confirmRename) {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(.green)
-                                        .padding(6)
-                                }
-                                .buttonStyle(BorderlessButtonStyle()) // safer than Plain here
-                                .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-                                Button(action: cancelRename) {
-                                    Image(systemName: "xmark")
-                                        .foregroundColor(.red)
-                                        .padding(6)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
+        NavigationStack {
+            ZStack(alignment: .top) {
+                Color(red: 0.72, green: 0.78, blue: 0.89)
+                Form {
+                    if !hasReachedTabLimit {
+                        Section(header: Text("Add New Location").foregroundColor(.black)) {
+                            TextField("New Location Name", text: $newLocationName)
+                            
+                            if !newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && isAddDisabled {
+                                Text("You cannot name a tab \"All\" or reuse an existing name.")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
                             }
-                            .contentShape(Rectangle()) // ensures only the buttons are tappable
-                        }
-                        if renameConflictError {
-                            Text("Cannot rename to \"All\" or an existing name.")
-                                .font(.caption)
-                                .foregroundColor(.red)
+                            
+                            Button(action: handleAddLocation) {
+                                Text("Add")
+                                    .fontWeight(.medium)
+                                    .padding(.vertical, 4)
+                                    .padding(.horizontal, 15)
+                                    .background(
+                                        isAddDisabled
+                                        ? Color.gray.opacity(0.4)
+                                        : Color(red: 0.40, green: 0.45, blue: 0.62)
+                                    )
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                                    .animation(.easeInOut(duration: 0.2), value: isAddDisabled)
+                            }
+                            .disabled(isAddDisabled)
                         }
                     } else {
-                        HStack {
-                            Text(location.name ?? "Unnamed")
-                            Spacer()
-                            Button("Rename") {
-                                locationBeingRenamed = location
-                                editedName = location.name ?? ""
-                            }
-                            .buttonStyle(BorderlessButtonStyle())
+                        Section {
+                            Text("Maximum of 5 custom tabs reached.")
+                                .foregroundColor(.red)
+                                .font(.footnote)
                         }
                     }
+                    
+                    
+                    Section(header: Text("Current Locations").foregroundColor(.black)) {
+                        let filteredLocations = sortedLocations.filter { $0.name != "All" }
+                        
+                        ForEach(filteredLocations, id: \.self) { location in
+                            if locationBeingRenamed == location {
+                                HStack {
+                                    TextField("New name", text: $editedName)
+                                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    
+                                    HStack(spacing: 12) {
+                                        Button(action: confirmRename) {
+                                            Image(systemName: "checkmark")
+                                                .foregroundColor(.green)
+                                                .padding(6)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle()) // safer than Plain here
+                                        .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                                        
+                                        Button(action: cancelRename) {
+                                            Image(systemName: "xmark")
+                                                .foregroundColor(.red)
+                                                .padding(6)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
+                                    }
+                                    .contentShape(Rectangle()) // ensures only the buttons are tappable
+                                }
+                                if renameConflictError {
+                                    Text("Cannot rename to \"All\" or an existing name.")
+                                        .font(.caption)
+                                        .foregroundColor(.red)
+                                }
+                            } else {
+                                HStack {
+                                    Text(location.name ?? "Unnamed")
+                                    Spacer()
+                                    Button("Rename") {
+                                        locationBeingRenamed = location
+                                        editedName = location.name ?? ""
+                                    }
+                                    .buttonStyle(BorderlessButtonStyle())
+                                }
+                            }
+                        }
+                        .onDelete(perform: deleteLocation)
+                    }
                 }
-                .onDelete(perform: deleteLocation)
+                .scrollContentBackground(.hidden)
             }
+            .navigationTitle("Manage Locations")
         }
-        .navigationTitle("Manage Locations")
     }
 
     private func deleteLocation(at offsets: IndexSet) {

@@ -18,32 +18,38 @@ struct SettingsView: View {
     @State private var isManagingLocations = false
 
     var body: some View {
-        Form {
-            Section(header: Text("Visual Options")) {
-                Toggle("Highlight Expired Items", isOn: $highlightExpired)
-                Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)
-                Toggle("Show Obtained Date Field", isOn: $showObtainedDate)
-            }
-
-            Section(header: Text("Behavior")) {
-                Toggle("Suppress Duplicate Item Popups", isOn: $suppressDuplicatePopups)
-//                Stepper("Default Quantity: \(defaultQuantity)", value: $defaultQuantity, in: 1...100)
-            }
-
-            Section(header: Text("Tabs & Locations")) {
-                Button("Manage Tabs") {
-                    isManagingLocations = true
+        NavigationStack {
+            ZStack(alignment: .top) {
+                Color(red: 0.72, green: 0.78, blue: 0.89)
+                    .ignoresSafeArea()
+                Form {
+                    Section(header: Text("Visual Options").foregroundColor(.black)) {
+                        Toggle("Highlight Expired Items", isOn: $highlightExpired)
+                        Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)
+                        Toggle("Show Obtained Date Field", isOn: $showObtainedDate)
+                    }
+                    
+                    Section(header: Text("Behavior").foregroundColor(.black)) {
+                        Toggle("Suppress Duplicate Item Popups", isOn: $suppressDuplicatePopups)
+                    }
+                    
+                    Section(header: Text("Tabs & Locations").foregroundColor(.black)) {
+                        Button("Manage Tabs") {
+                            isManagingLocations = true
+                        }
+                    }
+                    
+                    Section(header: Text("Themes & UI")) {
+                        Text("Coming soon: theme customization 🦊")
+                            .foregroundColor(.gray)
+                    }
+                }
+                .scrollContentBackground(.hidden)
+                .navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
+                .navigationDestination(isPresented: $isManagingLocations) {
+                    ManageLocationsView()
                 }
             }
-            
-            Section(header: Text("Themes & UI")) {
-                Text("Coming soon: theme customization 🦊")
-                    .foregroundColor(.gray)
-            }
-        }
-        .navigationTitle("Settings")
-        .navigationDestination(isPresented: $isManagingLocations) {
-            ManageLocationsView()
         }
     }
 }

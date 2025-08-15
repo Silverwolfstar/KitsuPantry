@@ -125,9 +125,8 @@ struct ItemsListView: View {
 
                 .scrollContentBackground(.hidden)
                 .listSectionSpacing(0)
-                .padding(.top, -34)
+                .padding(.top, -28)
             }
-            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color(white: 0.27), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
