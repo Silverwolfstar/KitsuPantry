@@ -20,7 +20,6 @@ struct ManageLocationsView: View {
     @State private var newLocationName: String = ""
     @State private var locationBeingRenamed: LocationEntity?
     @State private var editedName: String = ""
-    @State private var addConflictError = false
     @State private var renameConflictError = false
     
     private var isAddDisabled: Bool {
@@ -46,11 +45,8 @@ struct ManageLocationsView: View {
             if !hasReachedTabLimit {
                 Section(header: Text("Add New Location")) {
                     TextField("New Location Name", text: $newLocationName)
-                    .onChange(of: newLocationName, initial: false) { oldValue, newValue in
-                        addConflictError = false
-                    }
 
-                    if addConflictError {
+                    if !newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && isAddDisabled {
                         Text("You cannot name a tab \"All\" or reuse an existing name.")
                             .font(.caption)
                             .foregroundColor(.red)
@@ -179,12 +175,7 @@ struct ManageLocationsView: View {
     private func handleAddLocation() {
         let trimmed = newLocationName.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if trimmed.lowercased() == "all" || locations.contains(where: { $0.name == trimmed }) {
-            addConflictError = true
-            return
-        }
-
-        addConflictError = false
+        guard !isAddDisabled else { return }
 
         let newLocation = LocationEntity(context: viewContext)
         newLocation.name = trimmed
