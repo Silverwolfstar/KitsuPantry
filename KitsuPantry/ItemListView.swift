@@ -112,7 +112,7 @@ struct ItemsListView: View {
                             .padding(.vertical, 6)
 
                         }
-                        .contentShape(Rectangle()) // ✅ Makes entire row tappable
+                        .contentShape(Rectangle()) // Makes entire row tappable
                         .onTapGesture {
                             activeSheet = .edit(item)
                         }

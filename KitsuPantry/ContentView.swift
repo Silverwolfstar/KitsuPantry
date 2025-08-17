@@ -42,7 +42,7 @@ struct ContentView: View {
                     ? .all
                     : .location(selectedLocation!),
                 title: selectedLocation?.name ?? "All",
-                locations: .constant(Array(locations))  // You’re not editing here, so .constant is fine
+                locations: .constant(Array(locations))
             )
         }
         .onAppear {

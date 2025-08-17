@@ -102,6 +102,7 @@ struct ItemFormView: View {
                 Form {
                     Section(header: Text("Item Info").foregroundColor(.black)) {
                         TextField("Name", text: $name)
+                            .autocorrectionDisabled(true)
                         Picker("Location", selection: $selectedLocation) {
                             Text("Miscellaneous").tag(nil as LocationEntity?)
                             ForEach(sortedLocations.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
@@ -145,6 +146,7 @@ struct ItemFormView: View {
                             Text("Notes")
                                 .font(.caption)
                                 .foregroundColor(.gray)
+                                .autocorrectionDisabled(true)
                             
                             ZStack {
                                 RoundedRectangle(cornerRadius: 6)
@@ -157,7 +159,7 @@ struct ItemFormView: View {
                                 TextEditor(text: $notes)
                                     .padding(4)
                                     .foregroundColor(colorScheme == .dark ? .white : .black)
-                                    .background(Color.clear) // prevent TextEditor from overriding ZStack
+                                    .background(Color.clear)
                             }
                             .frame(minHeight: 80)
                         }

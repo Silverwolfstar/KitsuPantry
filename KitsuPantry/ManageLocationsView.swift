@@ -95,7 +95,7 @@ struct ManageLocationsView: View {
                                                 .foregroundColor(.green)
                                                 .padding(6)
                                         }
-                                        .buttonStyle(BorderlessButtonStyle()) // safer than Plain here
+                                        .buttonStyle(BorderlessButtonStyle())
                                         .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                                         
                                         Button(action: cancelRename) {
@@ -105,7 +105,7 @@ struct ManageLocationsView: View {
                                         }
                                         .buttonStyle(BorderlessButtonStyle())
                                     }
-                                    .contentShape(Rectangle()) // ensures only the buttons are tappable
+                                    .contentShape(Rectangle())
                                 }
                                 if renameConflictError {
                                     Text("Cannot rename to \"All\" or an existing name.")
