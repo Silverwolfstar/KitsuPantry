@@ -68,8 +68,6 @@ Todo:
             - Send notis when stuff gets close to expiring.
     - Help page:
         - Explain swipe to delete
-    - Aesthetic:
-        - Fox icon
     - Final thing:
         - Set up CloudKit, pay $99 to apple for dev acc, throw it on the store. ^-^
 
