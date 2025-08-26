@@ -17,38 +17,55 @@ struct ContentView: View {
         animation: .default
     ) private var locations: FetchedResults<LocationEntity>
 
-    @State private var selectedLocation: LocationEntity?
+    @State private var selectedLocationID: NSManagedObjectID?
+    @State private var pickerReloadKey = UUID()
 
+    private func location(for id: NSManagedObjectID?) -> LocationEntity? {
+        guard let id else { return nil }
+        return try? viewContext.existingObject(with: id) as? LocationEntity
+    }
+    
     private var sortedLocations: [LocationEntity] {
         let all = locations.first(where: { $0.name == "All" })
         let others = locations.filter { $0.name != "All" }
             .sorted { ($0.name ?? "") < ($1.name ?? "") }
         return (all != nil) ? [all!] + others : others
     }
+    
+    private var segmentSignature: String {
+            locations
+                .map { $0.objectID.uriRepresentation().absoluteString + "|" + ($0.name ?? "") }
+                .joined(separator: ",")
+        }
 
     var body: some View {
         VStack {
-            Picker("Location", selection: $selectedLocation) {
-                ForEach(sortedLocations, id: \.self) { location in
-                    Text(location.name ?? "Unnamed").tag(location as LocationEntity?)
+            Picker("Location", selection: $selectedLocationID) {
+                ForEach(sortedLocations, id: \.objectID) { location in
+                    Text(location.name ?? "Unnamed").tag(Optional(location.objectID))
                 }
             }
-            .pickerStyle(SegmentedPickerStyle())
+            .id(pickerReloadKey)
+            .pickerStyle(.segmented)
             .padding(.horizontal)
             .padding(.bottom, 0)
+            .onChange(of: segmentSignature) { _, _ in
+                pickerReloadKey = UUID()
+            }
 
+            let selectedLoc = location(for: selectedLocationID)
             ItemsListView(
-                filter: selectedLocation == nil || selectedLocation?.name == "All"
+                filter: selectedLoc == nil || selectedLoc?.name == "All"
                     ? .all
-                    : .location(selectedLocation!),
-                title: selectedLocation?.name ?? "All",
+                    : .location(selectedLoc!),
+                title: selectedLoc?.name ?? "All",
                 locations: .constant(Array(locations))
             )
         }
         .onAppear {
             seedDefaultLocations(context: viewContext)
-            if selectedLocation == nil {
-                selectedLocation = locations.first(where: { $0.name == "All" })
+            if selectedLocationID == nil {
+                selectedLocationID = locations.first(where: { $0.name == "All" })?.objectID
             }
         }
     }

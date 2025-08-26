@@ -2,8 +2,6 @@
 
 
 NEXT UP:
-    - FIX!! RENAME OF DEFAULT TAB DOES NOT UPDATE TAB BAR NAME. :(
-        - (Renaming of other tabs seems to work fine)
     - Make the background color the same across everything, use a variable for colors. One for dark grey (nav bar) and another for silver-blue (background).
         - Background's grey-blue: Color(red: 0.72, green: 0.78, blue: 0.89)
         - Nav bar's grey: UIColor(white: 0.27, alpha: 1)
