@@ -21,6 +21,11 @@ enum AppColor {
     // Text accents
     static let invalidNote = Color.red
     static let sectionTitle = Color.black
+//    TODO: static let secondaryText   = Color.gray   // for subtle captions, “coming soon”, etc.
+    
+    // Cards
+    static let cardFill   = Color(white: 0.12)
+    static let cardShadow = Color.black.opacity(0.35)
 }
 
 // UIKit-facing colors (for UINavigationBarAppearance, etc.)

@@ -103,8 +103,8 @@ struct ItemsListView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color(.systemBackground))
-                                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                                    .fill(AppColor.cardFill)
+                                    .shadow(color: AppColor.cardShadow, radius: 4, x: 0, y: 2)
                             )
                             .padding(.vertical, 6)
 
