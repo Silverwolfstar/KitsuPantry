@@ -97,10 +97,8 @@ struct ItemFormView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top){
-                Color(red: 0.72, green: 0.78, blue: 0.89)
-                    .ignoresSafeArea()
                 Form {
-                    Section(header: Text("Item Info").foregroundColor(.black)) {
+                    Section(header: Text("Item Info").foregroundColor(AppColor.sectionTitle)) {
                         TextField("Name", text: $name)
                             .autocorrectionDisabled(true)
                         Picker("Location", selection: $selectedLocation) {
@@ -133,7 +131,7 @@ struct ItemFormView: View {
                         if !quantityIsValid && !quantityText.isEmpty {
                             Text("Quantity must be greater than 0")
                                 .font(.caption)
-                                .foregroundColor(.red)
+                                .foregroundColor(AppColor.invalidNote)
                         }
                         
                         DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
@@ -167,7 +165,7 @@ struct ItemFormView: View {
                 }
                 .scrollContentBackground(.hidden)
             }
-            
+            .appBackground()
             .navigationTitle(title)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

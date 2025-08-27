@@ -20,20 +20,18 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                Color(red: 0.72, green: 0.78, blue: 0.89)
-                    .ignoresSafeArea()
                 Form {
-                    Section(header: Text("Visual Options").foregroundColor(.black)) {
+                    Section(header: Text("Visual Options").foregroundColor(AppColor.sectionTitle)) {
                         Toggle("Highlight Expired Items", isOn: $highlightExpired)
                         Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)
                         Toggle("Show Obtained Date Field", isOn: $showObtainedDate)
                     }
                     
-                    Section(header: Text("Behavior").foregroundColor(.black)) {
+                    Section(header: Text("Behavior").foregroundColor(AppColor.sectionTitle)) {
                         Toggle("Suppress Duplicate Item Popups", isOn: $suppressDuplicatePopups)
                     }
                     
-                    Section(header: Text("Tabs & Locations").foregroundColor(.black)) {
+                    Section(header: Text("Tabs & Locations").foregroundColor(AppColor.sectionTitle)) {
                         Button("Manage Tabs") {
                             isManagingLocations = true
                         }
@@ -41,7 +39,7 @@ struct SettingsView: View {
                     
                     Section(header: Text("Themes & UI")) {
                         Text("Coming soon: theme customization 🦊")
-                            .foregroundColor(.gray)
+                            .foregroundColor(AppColor.sectionTitle)
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -50,6 +48,7 @@ struct SettingsView: View {
                     ManageLocationsView()
                 }
             }
+            .appBackground()
         }
     }
 }

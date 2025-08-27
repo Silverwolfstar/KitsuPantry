@@ -13,7 +13,7 @@ struct KitsuPantryApp: App {
     init() {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor(white: 0.27, alpha: 1) // dark background
+            appearance.backgroundColor = AppUIColor.navDark
             appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
             appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
 

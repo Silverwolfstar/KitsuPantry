@@ -66,9 +66,6 @@ struct ItemsListView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                Color(red: 0.72, green: 0.78, blue: 0.89)
-
-
                 List {
                     ForEach(items) { item in
                         HStack {
@@ -127,8 +124,9 @@ struct ItemsListView: View {
                 .listSectionSpacing(0)
                 .padding(.top, -28)
             }
+            .appBackground() 
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color(white: 0.27), for: .navigationBar)
+            .toolbarBackground(AppColor.navDark, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
@@ -150,7 +148,7 @@ struct ItemsListView: View {
                 ToolbarItem(placement: .principal) {
                     Text(title)
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(AppColor.titleText)
                 }
             }
             .sheet(item: $activeSheet) { sheet in

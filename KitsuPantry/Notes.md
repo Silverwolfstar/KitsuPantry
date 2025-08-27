@@ -2,15 +2,10 @@
 
 
 NEXT UP:
-    - Make the background color the same across everything, use a variable for colors. One for dark grey (nav bar) and another for silver-blue (background).
-        - Background's grey-blue: Color(red: 0.72, green: 0.78, blue: 0.89)
-        - Nav bar's grey: UIColor(white: 0.27, alpha: 1)
-        - Also variable-ize colors for everything else.
-            - Title text white: .white
-            - Disabled location add button: Color.gray.opacity(0.4)
-            - Enabled location add button: Color(red: 0.40, green: 0.45, blue: 0.62)
-            - Invalid add location note: .red
-            - Section titles: .black
+    - KitsuPantryApp.swift - make EVERY color in EVERY file a variable. Incl:
+    appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+    appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+ 
     - Use a variable for title. Delete leftover code.
 
 

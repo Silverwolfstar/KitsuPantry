@@ -62,6 +62,7 @@ struct ContentView: View {
                 locations: .constant(Array(locations))
             )
         }
+        
         .onAppear {
             seedDefaultLocations(context: viewContext)
             if selectedLocationID == nil {

@@ -43,16 +43,15 @@ struct ManageLocationsView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
-                Color(red: 0.72, green: 0.78, blue: 0.89)
                 Form {
                     if !hasReachedTabLimit {
-                        Section(header: Text("Add New Location").foregroundColor(.black)) {
+                        Section(header: Text("Add New Location").foregroundColor(AppColor.sectionTitle)) {
                             TextField("New Location Name", text: $newLocationName)
                             
                             if !newLocationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && isAddDisabled {
                                 Text("You cannot name a tab \"All\" or reuse an existing name.")
                                     .font(.caption)
-                                    .foregroundColor(.red)
+                                    .foregroundColor(AppColor.invalidNote)
                             }
                             
                             Button(action: handleAddLocation) {
@@ -62,8 +61,8 @@ struct ManageLocationsView: View {
                                     .padding(.horizontal, 15)
                                     .background(
                                         isAddDisabled
-                                        ? Color.gray.opacity(0.4)
-                                        : Color(red: 0.40, green: 0.45, blue: 0.62)
+                                        ? AppColor.addBtnDisabled
+                                        : AppColor.addBtnEnabled
                                     )
                                     .foregroundColor(.white)
                                     .cornerRadius(8)
@@ -74,13 +73,13 @@ struct ManageLocationsView: View {
                     } else {
                         Section {
                             Text("Maximum of 5 custom tabs reached.")
-                                .foregroundColor(.red)
+                                .foregroundColor(AppColor.invalidNote)
                                 .font(.footnote)
                         }
                     }
                     
                     
-                    Section(header: Text("Current Locations").foregroundColor(.black)) {
+                    Section(header: Text("Current Locations").foregroundColor(AppColor.sectionTitle)) {
                         let filteredLocations = sortedLocations.filter { $0.name != "All" }
                         
                         ForEach(filteredLocations, id: \.self) { location in
@@ -129,6 +128,7 @@ struct ManageLocationsView: View {
                 }
                 .scrollContentBackground(.hidden)
             }
+            .appBackground()
             .navigationTitle("Manage Locations")
         }
     }
@@ -161,7 +161,6 @@ struct ManageLocationsView: View {
         }
 
         renameConflictError = false
-
         location.name = trimmed
         do {
             try viewContext.save()
