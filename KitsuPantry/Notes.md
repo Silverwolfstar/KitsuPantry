@@ -1,6 +1,5 @@
 #  Notes
 
-
 NEXT UP: 
     - Fix the fact that notes border is a different color than the horizontal rule between sections.
     - Variable colors for ContextView
