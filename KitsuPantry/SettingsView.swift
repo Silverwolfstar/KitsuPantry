@@ -37,9 +37,9 @@ struct SettingsView: View {
                         }
                     }
                     
-                    Section(header: Text("Themes & UI")) {
+                    Section(header: Text("Themes & UI").foregroundColor(AppColor.sectionTitle)) {
                         Text("Coming soon: theme customization 🦊")
-                            .foregroundColor(AppColor.sectionTitle)
+                            .foregroundColor(AppColor.secondaryText)
                     }
                 }
                 .scrollContentBackground(.hidden)

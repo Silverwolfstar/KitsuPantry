@@ -14,8 +14,8 @@ struct KitsuPantryApp: App {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = AppUIColor.navDark
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.titleTextAttributes = [.foregroundColor: UIColor(AppColor.titleText)]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColor.titleText)]
 
             let navBar = UINavigationBar.appearance()
             navBar.standardAppearance = appearance

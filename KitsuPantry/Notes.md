@@ -1,11 +1,9 @@
 #  Notes
 
 
-NEXT UP:
-    - KitsuPantryApp.swift - make EVERY color in EVERY file a variable. Incl:
-    appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-    appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
- 
+NEXT UP: 
+    - Fix the fact that notes border is a different color than the horizontal rule between sections.
+    - Variable colors for ContextView
     - Use a variable for title. Delete leftover code.
 
 
@@ -85,5 +83,6 @@ Consider:
         - Extra theme selection.
         - Change highlight color of expiring soon/expired items.
         - Pay-what-you-can, with minimum.
+        - Fancy theme concepts: Sakura, galaxy, forest, mushroom, kitties, techy
     - Try w/TestFlight later.
     - Look into apple dev student acc -->

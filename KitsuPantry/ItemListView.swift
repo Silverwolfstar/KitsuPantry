@@ -82,20 +82,20 @@ struct ItemsListView: View {
                                 if let date = item.expirationDate {
                                     Text("Expires: \(formatted(date: date))")
                                         .font(.caption)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(AppColor.sectionTitle)
                                 }
 
                                 if showObtainedDate, let obtained = item.obtainedDate {
                                     Text("Obtained: \(formatted(date: obtained))")
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(AppColor.secondaryText)
                                 }
 
                                 if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
                                    !notes.isEmpty {
                                     Text("Notes:\n\(notes)")
                                         .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(AppColor.secondaryText)
                                         .padding(.top, 2)
                                 }
                             }

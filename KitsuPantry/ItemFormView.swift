@@ -103,7 +103,7 @@ struct ItemFormView: View {
                             .autocorrectionDisabled(true)
                         Picker("Location", selection: $selectedLocation) {
                             Text("Miscellaneous").tag(nil as LocationEntity?)
-                            ForEach(sortedLocations.filter { $0.name != "All" }, id: \.self) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
+                            ForEach(sortedLocations.filter { $0.name != "All" }, id: \.objectID) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
                             }
                         }
                         
@@ -143,20 +143,20 @@ struct ItemFormView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Notes")
                                 .font(.caption)
-                                .foregroundColor(.gray)
+                                .foregroundColor(AppColor.secondaryText)
                                 .autocorrectionDisabled(true)
                             
                             ZStack {
                                 RoundedRectangle(cornerRadius: 6)
-                                    .fill(colorScheme == .dark ? Color(white: 0.15) : Color.white)
+                                    .fill(AppColor.notesBg)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 6)
-                                            .stroke(Color.gray.opacity(0.3))
+                                            .stroke(AppColor.notesBorder)
                                     )
                                 
                                 TextEditor(text: $notes)
                                     .padding(4)
-                                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                                    .foregroundColor(AppColor.titleText)
                                     .background(Color.clear)
                             }
                             .frame(minHeight: 80)

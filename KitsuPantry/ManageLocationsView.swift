@@ -64,7 +64,7 @@ struct ManageLocationsView: View {
                                         ? AppColor.addBtnDisabled
                                         : AppColor.addBtnEnabled
                                     )
-                                    .foregroundColor(.white)
+                                    .foregroundColor(AppColor.titleText)
                                     .cornerRadius(8)
                                     .animation(.easeInOut(duration: 0.2), value: isAddDisabled)
                             }
@@ -82,7 +82,7 @@ struct ManageLocationsView: View {
                     Section(header: Text("Current Locations").foregroundColor(AppColor.sectionTitle)) {
                         let filteredLocations = sortedLocations.filter { $0.name != "All" }
                         
-                        ForEach(filteredLocations, id: \.self) { location in
+                        ForEach(filteredLocations, id: \.objectID) { location in
                             if locationBeingRenamed == location {
                                 HStack {
                                     TextField("New name", text: $editedName)
@@ -91,7 +91,7 @@ struct ManageLocationsView: View {
                                     HStack(spacing: 12) {
                                         Button(action: confirmRename) {
                                             Image(systemName: "checkmark")
-                                                .foregroundColor(.green)
+                                                .foregroundColor(AppColor.confirmGreen)
                                                 .padding(6)
                                         }
                                         .buttonStyle(BorderlessButtonStyle())
@@ -99,7 +99,7 @@ struct ManageLocationsView: View {
                                         
                                         Button(action: cancelRename) {
                                             Image(systemName: "xmark")
-                                                .foregroundColor(.red)
+                                                .foregroundColor(AppColor.cancelRed)
                                                 .padding(6)
                                         }
                                         .buttonStyle(BorderlessButtonStyle())
@@ -109,7 +109,7 @@ struct ManageLocationsView: View {
                                 if renameConflictError {
                                     Text("Cannot rename to \"All\" or an existing name.")
                                         .font(.caption)
-                                        .foregroundColor(.red)
+                                        .foregroundColor(AppColor.invalidNote)
                                 }
                             } else {
                                 HStack {
