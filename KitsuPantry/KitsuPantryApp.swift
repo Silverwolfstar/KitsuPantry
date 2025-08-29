@@ -11,17 +11,17 @@ import CoreData
 @main
 struct KitsuPantryApp: App {
     init() {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = AppUIColor.navDark
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = AppUIColor.navDark
         appearance.titleTextAttributes = [.foregroundColor: UIColor(AppColor.titleText)]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColor.titleText)]
 
-            let navBar = UINavigationBar.appearance()
-            navBar.standardAppearance = appearance
-            navBar.scrollEdgeAppearance = appearance
-            navBar.compactAppearance = appearance
-        }
+        let navBar = UINavigationBar.appearance()
+        navBar.standardAppearance = appearance
+        navBar.scrollEdgeAppearance = appearance
+        navBar.compactAppearance = appearance
+    }
     
     let persistenceController = PersistenceController.shared
 
@@ -29,6 +29,7 @@ struct KitsuPantryApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .appFormInsets(content: 16, line: 0)
         }
     }
 }

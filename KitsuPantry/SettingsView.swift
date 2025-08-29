@@ -43,6 +43,9 @@ struct SettingsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
+//                .listRowSeparator(.hidden)
+//                .listSectionSeparator(.hidden)
+                
                 .navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: $isManagingLocations) {
                     ManageLocationsView()

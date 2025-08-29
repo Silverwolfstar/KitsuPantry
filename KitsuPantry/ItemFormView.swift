@@ -99,71 +99,95 @@ struct ItemFormView: View {
             ZStack(alignment: .top){
                 Form {
                     Section(header: Text("Item Info").foregroundColor(AppColor.sectionTitle)) {
-                        TextField("Name", text: $name)
-                            .autocorrectionDisabled(true)
-                        Picker("Location", selection: $selectedLocation) {
-                            Text("Miscellaneous").tag(nil as LocationEntity?)
-                            ForEach(sortedLocations.filter { $0.name != "All" }, id: \.objectID) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
+                        FormRow {
+                            TextField("Name", text: $name)
+                                .autocorrectionDisabled(true)
+                        }
+                        
+                        FormRow {
+                            Picker("Location", selection: $selectedLocation) {
+                                Text("Miscellaneous").tag(nil as LocationEntity?)
+                                ForEach(sortedLocations.filter { $0.name != "All" }, id: \.objectID) { cat in Text(cat.name ?? "Unnamed").tag(cat as LocationEntity?)
+                                }
                             }
                         }
                         
-                        HStack {
-                            Text("Quantity")
-                            Spacer()
-                            TextField("", text: $quantityText)
-                                .frame(width: 80)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
-                                .focused($quantityFieldIsFocused)
-                                .onChange(of: quantityText) {
-                                    let cleaned = cleanDecimalInput(quantityText)
-                                    quantityText = cleaned
-                                    if let num = Double(cleaned) {
-                                        quantity = num
+                        FormRow {
+                            HStack {
+                                Text("Quantity")
+                                Spacer()
+                                TextField("", text: $quantityText)
+                                    .frame(width: 80)
+                                    .keyboardType(.decimalPad)
+                                    .multilineTextAlignment(.trailing)
+                                    .focused($quantityFieldIsFocused)
+                                    .onChange(of: quantityText) {
+                                        let cleaned = cleanDecimalInput(quantityText)
+                                        quantityText = cleaned
+                                        if let num = Double(cleaned) {
+                                            quantity = num
+                                        }
                                     }
-                                }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            quantityFieldIsFocused = true
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                quantityFieldIsFocused = true
+                            }
                         }
                         
                         if !quantityIsValid && !quantityText.isEmpty {
-                            Text("Quantity must be greater than 0")
-                                .font(.caption)
-                                .foregroundColor(AppColor.invalidNote)
+                            FormRow(showSeparator: false) {
+                                Text("Quantity must be greater than 0")
+                                    .font(.caption)
+                                    .foregroundColor(AppColor.invalidNote)
+                            }
                         }
-                        
-                        DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
                         
                         if showObtainedDate {
-                            DatePicker("Obtained Date", selection: $obtainedDate, displayedComponents: .date)
+                            FormRow {
+                                DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
+                            }
+                            FormRow(showSeparator: false) {
+                                DatePicker("Obtained Date", selection: $obtainedDate, displayedComponents: .date)
+                            }
+                        }
+                        else {
+                            FormRow(showSeparator: false) {
+                                DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
+                            }
                         }
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Notes")
-                                .font(.caption)
-                                .foregroundColor(AppColor.secondaryText)
-                                .autocorrectionDisabled(true)
-                            
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(AppColor.notesBg)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .stroke(AppColor.notesBorder)
-                                    )
+                        FormRow(showSeparator: false) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Notes")
+                                    .font(.caption)
+                                    .foregroundColor(AppColor.secondaryText)
+                                    .autocorrectionDisabled(true)
                                 
-                                TextEditor(text: $notes)
-                                    .padding(4)
-                                    .foregroundColor(AppColor.titleText)
-                                    .background(Color.clear)
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(AppColor.notesBg)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .stroke(AppColor.notesBorder)
+                                        )
+                                    
+                                    TextEditor(text: $notes)
+                                        .padding(4)
+                                        .foregroundColor(AppColor.titleText)
+                                        .background(Color.clear)
+                                }
+                                .frame(minHeight: 80)
                             }
-                            .frame(minHeight: 80)
                         }
                     }
+                    
+                    .listRowSeparator(.hidden, edges: .all)
+                    .listSectionSeparator(.hidden, edges: .all)
                 }
                 .scrollContentBackground(.hidden)
+                .listSectionSpacing(0)
+                .listRowSpacing(0)
             }
             .appBackground()
             .navigationTitle(title)

@@ -14,8 +14,12 @@ enum AppColor {
     static let navDark = Color(white: 0.27) // matches nav bar
     static let titleText = Color.white
     static let sectionTitle = Color.black
+    
+    // Add item page
     static let notesBg = Color.white
-    static let notesBorder = secondaryText.opacity(0.3)
+    static let notesBorder = Color.cyan // temp, change later
+    //static let notesBorder = secondaryText.opacity(0.3)
+    static let separator = notesBorder
 
     // Buttons
     static let addBtnEnabled = Color(red: 0.40, green: 0.45, blue: 0.62)
@@ -39,8 +43,71 @@ enum AppUIColor {
     static let navDark = UIColor(white: 0.27, alpha: 1.0)
 }
 
+private struct BottomSeparator: ViewModifier {
+    let inset: CGFloat
+    func body(content: Content) -> some View {
+        content.overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppColor.separator)   // palette color
+                .frame(height: 1)
+                .padding(.leading, inset)   // aligns with Form text inset
+        }
+    }
+}
+
 extension View {
     func appBackground() -> some View {
         self.background(AppColor.bg.ignoresSafeArea())
+    }
+    
+    func bottomSeparator(inset: CGFloat = 16) -> some View {
+        modifier(BottomSeparator(inset: inset))
+    }
+}
+
+private struct AppFormInsetsKey: EnvironmentKey {
+    static let defaultValue: (content: CGFloat, line: CGFloat?) = (16, nil)
+}
+extension EnvironmentValues {
+    var appFormInsets: (content: CGFloat, line: CGFloat?) {
+        get { self[AppFormInsetsKey.self] }
+        set { self[AppFormInsetsKey.self] = newValue }
+    }
+}
+extension View {
+    /// Set default content inset and separator line inset for all `FormRow`s in this subtree.
+    func appFormInsets(content: CGFloat = 16, line: CGFloat? = nil) -> some View {
+        environment(\.appFormInsets, (content, line))
+    }
+}
+
+struct FormRow<Content: View>: View {
+    @Environment(\.appFormInsets) private var envInsets
+    
+    var showSeparator: Bool = true
+    var contentInset: CGFloat? = nil
+    var lineInset: CGFloat? = nil
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        let ci = contentInset ?? envInsets.content
+        let li = lineInset ?? envInsets.line ?? ci
+        content()
+            .padding(.vertical, 10)
+            .listRowInsets(EdgeInsets(top: 0, leading: ci, bottom: 0, trailing: ci))
+            .overlay(alignment: .bottom) {
+                if(showSeparator) {
+                    Rectangle()
+                        .fill(AppColor.separator)
+                        .frame(height: 1)
+                        .padding(.leading, li)
+                }
+            }
+    }
+}
+
+private extension View {
+    @ViewBuilder func `if`<C: View>(_ condition: Bool, transform: (Self) -> C) -> some View {
+        if condition { transform(self) } else { self }
     }
 }

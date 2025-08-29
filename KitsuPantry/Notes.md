@@ -1,7 +1,7 @@
 #  Notes
 
 NEXT UP: 
-    - Fix the fact that notes border is a different color than the horizontal rule between sections.
+    - Add colored separators to ManageLocationsView and SettingsView
     - Variable colors for ContextView
     - Use a variable for title. Delete leftover code.
 

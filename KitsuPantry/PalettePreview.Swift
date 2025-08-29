@@ -5,6 +5,8 @@
 //  Created by Silver on 8/28/25.
 //
 
+// Note: Update (eventually) when stuff is added.
+
 #if DEBUG
 import SwiftUI
 

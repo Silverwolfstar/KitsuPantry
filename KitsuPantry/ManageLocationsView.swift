@@ -127,6 +127,8 @@ struct ManageLocationsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
+//                .listRowSeparator(.hidden)
+//                .listSectionSeparator(.hidden)
             }
             .appBackground()
             .navigationTitle("Manage Locations")
