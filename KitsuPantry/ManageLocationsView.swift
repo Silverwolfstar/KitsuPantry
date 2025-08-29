@@ -91,42 +91,41 @@ struct ManageLocationsView: View {
                     Section(header: Text("Current Locations").foregroundColor(AppColor.sectionTitle)) {
                         let filteredLocations = sortedLocations.filter { $0.name != "All" }
                         
-                        ForEach(filteredLocations, id: \.objectID) { location in
-                            if locationBeingRenamed == location {
-                                FormRow{
-                                    HStack {
-                                        TextField("New name", text: $editedName)
-                                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                                        
-                                        HStack(spacing: 12) {
-                                            Button(action: confirmRename) {
-                                                Image(systemName: "checkmark")
-                                                    .foregroundColor(AppColor.confirmGreen)
-                                                    .padding(6)
-                                            }
-                                            .buttonStyle(BorderlessButtonStyle())
-                                            .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        ForEach(Array(filteredLocations.enumerated()), id: \.element.objectID) { index, location in
+                            let isLast = index == filteredLocations.count - 1
+                            FormRow(showSeparator: !isLast) {
+                                if locationBeingRenamed == location {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        HStack {
+                                            TextField("New name", text: $editedName)
+                                                .textFieldStyle(RoundedBorderTextFieldStyle())
                                             
-                                            Button(action: cancelRename) {
-                                                Image(systemName: "xmark")
-                                                    .foregroundColor(AppColor.cancelRed)
-                                                    .padding(6)
+                                            HStack(spacing: 12) {
+                                                Button(action: confirmRename) {
+                                                    Image(systemName: "checkmark")
+                                                        .foregroundColor(AppColor.confirmGreen)
+                                                        .padding(6)
+                                                }
+                                                .buttonStyle(BorderlessButtonStyle())
+                                                .disabled(editedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                                                
+                                                Button(action: cancelRename) {
+                                                    Image(systemName: "xmark")
+                                                        .foregroundColor(AppColor.cancelRed)
+                                                        .padding(6)
+                                                }
+                                                .buttonStyle(BorderlessButtonStyle())
                                             }
-                                            .buttonStyle(BorderlessButtonStyle())
+                                            .contentShape(Rectangle())
                                         }
-                                        .contentShape(Rectangle())
+                                        
+                                        if renameConflictError {
+                                            Text("Cannot rename to \"All\" or an existing name.")
+                                                .font(.caption)
+                                                .foregroundColor(AppColor.invalidNote)
+                                        }
                                     }
-                                }
-
-                                if renameConflictError {
-                                    FormRow(showSeparator: false){
-                                        Text("Cannot rename to \"All\" or an existing name.")
-                                            .font(.caption)
-                                            .foregroundColor(AppColor.invalidNote)
-                                    }
-                                }
-                            } else {
-                                FormRow{
+                                } else {
                                     HStack {
                                         Text(location.name ?? "Unnamed")
                                         Spacer()
