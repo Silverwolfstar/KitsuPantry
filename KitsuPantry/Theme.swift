@@ -106,6 +106,29 @@ struct FormRow<Content: View>: View {
     }
 }
 
+//// Renders a collection of rows with FormRow, auto-hiding the separator on the last row.
+//struct FormRows<Data: RandomAccessCollection, ID: Hashable, Row: View>: View {
+//    let data: Data
+//    let id: KeyPath<Data.Element, ID>
+//    var contentInset: CGFloat = 16
+//    var lineInset: CGFloat? = nil
+//    @ViewBuilder var row: (Data.Element) -> Row
+//
+//    var body: some View {
+//        let array = Array(data)
+//        ForEach(array.indices, id: \.self) { i in
+//            let element = array[i]
+//            FormRow(
+//                showSeparator: i != array.index(before: array.endIndex),
+//                contentInset: contentInset,
+//                lineInset: lineInset
+//            ) {
+//                row(element)
+//            }
+//        }
+//    }
+//}
+
 private extension View {
     @ViewBuilder func `if`<C: View>(_ condition: Bool, transform: (Self) -> C) -> some View {
         if condition { transform(self) } else { self }

@@ -22,29 +22,37 @@ struct SettingsView: View {
             ZStack(alignment: .top) {
                 Form {
                     Section(header: Text("Visual Options").foregroundColor(AppColor.sectionTitle)) {
-                        Toggle("Highlight Expired Items", isOn: $highlightExpired)
-                        Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)
-                        Toggle("Show Obtained Date Field", isOn: $showObtainedDate)
+                        FormRow {
+                            Toggle("Highlight Expired Items", isOn: $highlightExpired)}
+                        FormRow {
+                            Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)}
+                        FormRow(showSeparator: false) {
+                            Toggle("Show Obtained Date Field", isOn: $showObtainedDate)}
                     }
                     
                     Section(header: Text("Behavior").foregroundColor(AppColor.sectionTitle)) {
-                        Toggle("Suppress Duplicate Item Popups", isOn: $suppressDuplicatePopups)
+                        FormRow(showSeparator: false) {
+                            Toggle("Suppress Duplicate Item Popups", isOn: $suppressDuplicatePopups)}
                     }
                     
                     Section(header: Text("Tabs & Locations").foregroundColor(AppColor.sectionTitle)) {
-                        Button("Manage Tabs") {
-                            isManagingLocations = true
+                        FormRow(showSeparator: false) {
+                            Button("Manage Locations") {
+                                isManagingLocations = true}
                         }
                     }
                     
                     Section(header: Text("Themes & UI").foregroundColor(AppColor.sectionTitle)) {
-                        Text("Coming soon: theme customization 🦊")
-                            .foregroundColor(AppColor.secondaryText)
+                        FormRow(showSeparator: false) {
+                            Text("Coming soon: theme customization 🦊")
+                                .foregroundColor(AppColor.secondaryText)
+                        }
                     }
                 }
+                .appFormInsets(content: 16, line: 0)
                 .scrollContentBackground(.hidden)
-//                .listRowSeparator(.hidden)
-//                .listSectionSeparator(.hidden)
+                .listSectionSpacing(0)
+                .listRowSpacing(0)
                 
                 .navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: $isManagingLocations) {

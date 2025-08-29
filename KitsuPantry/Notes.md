@@ -1,7 +1,7 @@
 #  Notes
 
 NEXT UP: 
-    - Add colored separators to ManageLocationsView and SettingsView
+    - ManageLocationsView remove last separator
     - Variable colors for ContextView
     - Use a variable for title. Delete leftover code.
 
