@@ -40,18 +40,27 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Picker("Location", selection: $selectedLocationID) {
-                ForEach(sortedLocations, id: \.objectID) { location in
-                    Text(location.name ?? "Unnamed").tag(Optional(location.objectID))
-                }
-            }
-            .id(pickerReloadKey)
-            .pickerStyle(.segmented)
+            SegmentedTabs(
+                items: sortedLocations.map(\.objectID),
+                title: { id in
+                    (try? viewContext.existingObject(with: id) as? LocationEntity)?.name ?? "?"
+                },
+                selection: Binding(
+                    get: {
+                        selectedLocationID
+                        ?? locations.first(where: { $0.name == "All" })?.objectID
+                        ?? sortedLocations.first?.objectID
+                        ?? {
+                            selectedLocationID!
+                        }()
+                    },
+                    set: { newID in
+                        selectedLocationID = newID
+                    }
+                )
+            )
             .padding(.horizontal)
             .padding(.bottom, 0)
-            .onChange(of: segmentSignature) { _, _ in
-                pickerReloadKey = UUID()
-            }
 
             let selectedLoc = location(for: selectedLocationID)
             ItemsListView(
@@ -62,12 +71,13 @@ struct ContentView: View {
                 locations: .constant(Array(locations))
             )
         }
-        
         .onAppear {
             seedDefaultLocations(context: viewContext)
             if selectedLocationID == nil {
                 selectedLocationID = locations.first(where: { $0.name == "All" })?.objectID
             }
         }
+        
+        .appBackground()
     }
 }

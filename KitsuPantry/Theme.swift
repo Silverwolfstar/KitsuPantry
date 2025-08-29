@@ -17,8 +17,7 @@ enum AppColor {
     
     // Add item page
     static let notesBg = Color.white
-    static let notesBorder = Color.cyan // temp, change later
-    //static let notesBorder = secondaryText.opacity(0.3)
+    static let notesBorder = bg
     static let separator = notesBorder
 
     // Buttons
@@ -36,6 +35,13 @@ enum AppColor {
     // Small icons (confirm/cancel)
     static let confirmGreen = Color.green
     static let cancelRed = Color.red
+    
+    // ContentView
+    static let tabBackground = Color.white
+    static let tabSelected   = Color.black.opacity(0.3)
+    static let tabUnselected = tabBackground
+    static let tabTextSelected = Color.black
+    static let tabTextUnselected = Color.black.opacity(0.7)
 }
 
 // UIKit-facing colors (for UINavigationBarAppearance, etc.)
