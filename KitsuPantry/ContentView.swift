@@ -36,7 +36,7 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             SegmentedTabs(
                 items: sortedLocations.map(\.objectID),
                 title: { id in
@@ -56,7 +56,6 @@ struct ContentView: View {
                     }
                 )
             )
-            .padding(.horizontal)
             .padding(.bottom, 0)
             
             ItemsListView(

@@ -13,7 +13,7 @@ struct SegmentedTabs<ID: Hashable>: View {
     @Binding var selection: ID
     
     private let barHeight: CGFloat = 36
-    private let outerBarPadding: CGFloat = 1      // the rounded container's inner padding
+    private let outerBarPadding: CGFloat = 1
     private let pillSpacing: CGFloat = 1
     private let pillHInset: CGFloat = 12
 
@@ -40,7 +40,7 @@ struct SegmentedTabs<ID: Hashable>: View {
         .frame(height: barHeight) // bar height locked
         .padding(outerBarPadding) // defines the inner edge the pill touches
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            Rectangle()
                 .fill(AppColor.tabBackground)
         )
         .animation(.easeInOut(duration: 0.18), value: selection)

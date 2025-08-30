@@ -145,7 +145,6 @@ struct ItemsListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    .foregroundColor(AppColor.navBarButtons)
                 }
                 ToolbarItem(placement: .principal) {
                     Text(title)
