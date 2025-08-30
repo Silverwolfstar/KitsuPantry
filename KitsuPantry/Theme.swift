@@ -38,7 +38,7 @@ enum AppColor {
     
     // ContentView
     static let tabBackground = Color.white
-    static let tabSelected   = Color.black.opacity(0.3)
+    static let tabSelected   = Color.black.opacity(0.1)
     static let tabUnselected = tabBackground
     static let tabTextSelected = Color.black
     static let tabTextUnselected = Color.black.opacity(0.7)
@@ -49,25 +49,9 @@ enum AppUIColor {
     static let navDark = UIColor(white: 0.27, alpha: 1.0)
 }
 
-private struct BottomSeparator: ViewModifier {
-    let inset: CGFloat
-    func body(content: Content) -> some View {
-        content.overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(AppColor.separator)   // palette color
-                .frame(height: 1)
-                .padding(.leading, inset)   // aligns with Form text inset
-        }
-    }
-}
-
 extension View {
     func appBackground() -> some View {
         self.background(AppColor.bg.ignoresSafeArea())
-    }
-    
-    func bottomSeparator(inset: CGFloat = 16) -> some View {
-        modifier(BottomSeparator(inset: inset))
     }
 }
 
@@ -109,11 +93,5 @@ struct FormRow<Content: View>: View {
                         .padding(.leading, li)
                 }
             }
-    }
-}
-
-private extension View {
-    @ViewBuilder func `if`<C: View>(_ condition: Bool, transform: (Self) -> C) -> some View {
-        if condition { transform(self) } else { self }
     }
 }

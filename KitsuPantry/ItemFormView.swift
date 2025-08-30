@@ -16,7 +16,6 @@ struct ItemFormView: View {
     let mode: FormMode
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) var dismiss
-    @Environment(\.colorScheme) var colorScheme
     
     @AppStorage("showObtainedDate") private var showObtainedDate = true
     @State private var obtainedDate = Date()
@@ -46,17 +45,6 @@ struct ItemFormView: View {
         let others = locations.filter { $0.name != "All" }
             .sorted { ($0.name ?? "") < ($1.name ?? "") }
         return (all != nil) ? [all!] + others : others
-    }
-
-    private var quantityFormatter: NumberFormatter {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.minimum = 0.01
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 2 // Allows e.g. 1.5 or 1.25
-        formatter.alwaysShowsDecimalSeparator = false
-        formatter.usesSignificantDigits = false
-        return formatter
     }
     
     private func cleanDecimalInput(_ input: String) -> String {

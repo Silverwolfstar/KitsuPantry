@@ -18,12 +18,6 @@ struct ContentView: View {
     ) private var locations: FetchedResults<LocationEntity>
 
     @State private var selectedLocationID: NSManagedObjectID?
-    @State private var pickerReloadKey = UUID()
-
-    private func location(for id: NSManagedObjectID?) -> LocationEntity? {
-        guard let id else { return nil }
-        return try? viewContext.existingObject(with: id) as? LocationEntity
-    }
     
     private var sortedLocations: [LocationEntity] {
         let all = locations.first(where: { $0.name == "All" })
@@ -32,11 +26,14 @@ struct ContentView: View {
         return (all != nil) ? [all!] + others : others
     }
     
-    private var segmentSignature: String {
-            locations
-                .map { $0.objectID.uriRepresentation().absoluteString + "|" + ($0.name ?? "") }
-                .joined(separator: ",")
-        }
+    private var selectedLocation: LocationEntity? {
+        guard let id = selectedLocationID else { return nil }
+        return try? viewContext.existingObject(with: id) as? LocationEntity
+    }
+
+    private var currentTitle: String {
+        selectedLocation?.name ?? "All"
+    }
 
     var body: some View {
         VStack {
@@ -61,23 +58,21 @@ struct ContentView: View {
             )
             .padding(.horizontal)
             .padding(.bottom, 0)
-
-            let selectedLoc = location(for: selectedLocationID)
+            
             ItemsListView(
-                filter: selectedLoc == nil || selectedLoc?.name == "All"
+                filter: selectedLocation == nil || selectedLocation?.name == "All"
                     ? .all
-                    : .location(selectedLoc!),
-                title: selectedLoc?.name ?? "All",
+                : .location(selectedLocation!),
+                title: currentTitle,
                 locations: .constant(Array(locations))
             )
         }
         .onAppear {
             seedDefaultLocations(context: viewContext)
             if selectedLocationID == nil {
-                selectedLocationID = locations.first(where: { $0.name == "All" })?.objectID
+                selectedLocationID = locations.first(where: { $0.name == "All" })?.objectID ?? sortedLocations.first?.objectID
             }
         }
-        
         .appBackground()
     }
 }
