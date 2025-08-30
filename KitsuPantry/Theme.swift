@@ -12,8 +12,10 @@ enum AppColor {
     // Core palette
     static let bg = Color(red: 0.72, green: 0.78, blue: 0.89) // silver-blue background
     static let navDark = Color(white: 0.27) // matches nav bar
+    static let navBarButtons = Color.white
     static let titleText = Color.white
     static let sectionTitle = Color.black
+    static let basicText = Color.black
     
     // Add item page
     static let notesBg = Color.white

@@ -16,6 +16,7 @@ struct SettingsView: View {
     
     @State private var isManagingTabs = false
     @State private var isManagingLocations = false
+    @State private var showingHelp = false
 
     var body: some View {
         NavigationStack {
@@ -57,6 +58,20 @@ struct SettingsView: View {
                 .navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: $isManagingLocations) {
                     ManageLocationsView()
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            showingHelp = true
+                        } label: {
+                            Image(systemName: "questionmark.circle")
+                        }
+                        .accessibilityLabel("Help")
+                        .foregroundColor(AppColor.navBarButtons)
+                    }
+                }
+                .sheet(isPresented: $showingHelp) {
+                    HelpView()
                 }
             }
             .appBackground()

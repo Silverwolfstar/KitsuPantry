@@ -1,8 +1,7 @@
 #  Notes
 
 NEXT UP: 
-    - Use a variable for title. Delete leftover code.
-
+    - 
 
 Exists:
     - List of items:
@@ -54,8 +53,6 @@ Todo:
         - “Expiring soon” notification/alerts.
             - A bar above the list with “You have expired items” or “Expiring soon”, clickable to bring up list w/details.
             - Send notis when stuff gets close to expiring.
-    - Help page:
-        - Explain swipe to delete
     - Final thing:
         - Set up CloudKit, pay $99 to apple for dev acc, throw it on the store. ^-^
 

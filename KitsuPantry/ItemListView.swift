@@ -55,7 +55,7 @@ struct ItemsListView: View {
             _items = FetchRequest(
                 entity: FoodItemEntity.entity(),
                 sortDescriptors: [NSSortDescriptor(keyPath: \FoodItemEntity.expirationDate, ascending: true)],
-                predicate: NSPredicate(format: "location == %@", location), // ✅ new relationship key
+                predicate: NSPredicate(format: "location == %@", location),
                 animation: .default
             )
             self.defaultLocationForAdd = location.name
@@ -136,6 +136,7 @@ struct ItemsListView: View {
                     } label: {
                         Image(systemName: "slider.horizontal.3")
                     }
+                    .foregroundColor(AppColor.navBarButtons)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -144,6 +145,7 @@ struct ItemsListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    .foregroundColor(AppColor.navBarButtons)
                 }
                 ToolbarItem(placement: .principal) {
                     Text(title)
