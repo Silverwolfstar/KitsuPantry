@@ -22,8 +22,6 @@ struct ItemsListView: View {
     @AppStorage("highlightExpiringSoon") private var highlightExpiringSoon = true
     @AppStorage("showStatusBanner") private var showStatusBanner = true
     @State private var showingStatusSheet = false
-    @State private var statusSheetMode: StatusMode? = nil
-    enum StatusMode { case expired, soon }
     
     @Binding var locations: [LocationEntity]
     @AppStorage("showObtainedDate") private var showObtainedDate = true
@@ -107,54 +105,34 @@ struct ItemsListView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 8) {
-                if(showStatusBanner){
-                    VStack(spacing: 8) {
-                        if expiredCount > 0 {
-                            Button {
-                                statusSheetMode = .expired
-                                showingStatusSheet = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                    Text("You have \(expiredCount) expired item\(expiredCount == 1 ? "" : "s")")
-                                        .font(.subheadline.weight(.semibold))
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.footnote)
-                                }
-                                .foregroundColor(AppColor.bannerText)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                        .fill(AppColor.bannerBgExpired)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                        } else if expiringSoonCount > 0 {
-                            Button {
-                                statusSheetMode = .soon
-                                showingStatusSheet = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "clock.badge.exclamationmark")
-                                    Text("Expiring soon: \(expiringSoonCount)")
-                                        .font(.subheadline.weight(.semibold))
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.footnote)
-                                }
-                                .foregroundColor(AppColor.bannerText)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                        .fill(AppColor.bannerBgSoon)
-                                )
-                            }
-                            .buttonStyle(.plain)
+                if showStatusBanner && (expiredCount > 0 || expiringSoonCount > 0) {
+                    Button {
+                        showingStatusSheet = true
+                    } label: {
+                        HStack (spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            let expiredText = expiredCount > 0
+                                ? "\(expiredCount) expired item\(expiredCount == 1 ? "" : "s")"
+                                : nil
+                            let soonText = expiringSoonCount > 0
+                                ? "\(expiringSoonCount) expiring soon"
+                                : nil
+                            
+                            Text([expiredText, soonText].compactMap { $0 }.joined(separator: " · "))
+                                .font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.footnote)
                         }
+                        .foregroundColor(AppColor.bannerText)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(AppColor.bannerBgExpired)
+                        )
                     }
+                    .buttonStyle(.plain)
                     .padding(.horizontal)
                     .padding(.top, 8)
                 }
@@ -273,9 +251,9 @@ struct ItemsListView: View {
                 SettingsView()
             }
             .sheet(isPresented: $showingStatusSheet) {
-                StatusListSheet(
-                    mode: statusSheetMode ?? .expired,
-                    items: statusSheetMode == .expired ? expiredItems : expiringSoonItems,
+                CombinedStatusSheet(
+                    expired: expiredItems,
+                    soon: expiringSoonItems,
                     showObtainedDate: showObtainedDate
                 )
             }
@@ -297,49 +275,33 @@ struct ItemsListView: View {
     }
 }
 
-private struct StatusListSheet: View {
-    let mode: ItemsListView.StatusMode
-    let items: [FoodItemEntity]
+private struct CombinedStatusSheet: View {
+    let expired: [FoodItemEntity]
+    let soon: [FoodItemEntity]
     let showObtainedDate: Bool
     @Environment(\.dismiss) private var dismiss
-
-    var title: String {
-        switch mode {
-        case .expired: return "Expired Items"
-        case .soon:    return "Expiring Soon"
-        }
-    }
-
+    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(items) { item in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.name ?? "Unnamed")
-                            .font(.headline)
-                        if let date = item.expirationDate {
-                            Text("Expires: \(format(date))")
-                                .font(.caption)
-                        }
-                        if showObtainedDate, let got = item.obtainedDate {
-                            Text("Obtained: \(format(got))")
-                                .font(.caption)
-                                .foregroundColor(AppColor.secondaryText)
-                        }
-                        if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
-                           !notes.isEmpty {
-                            Text(notes)
-                                .font(.subheadline)
-                                .foregroundColor(AppColor.secondaryText)
-                                .padding(.top, 2)
+                if !expired.isEmpty {
+                    Section("Expired") {
+                        ForEach(expired) { item in
+                            StatusRow(item: item, showObtainedDate: showObtainedDate)
                         }
                     }
-                    .padding(.vertical, 6)
+                }
+                if !soon.isEmpty {
+                    Section("Expiring Soon") {
+                        ForEach(soon) { item in
+                            StatusRow(item: item, showObtainedDate: showObtainedDate)
+                        }
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
             .appBackground()
-            .navigationTitle(title)
+            .navigationTitle("Notice")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -348,6 +310,36 @@ private struct StatusListSheet: View {
             }
         }
     }
+}
+    
+private struct StatusRow: View {
+    let item: FoodItemEntity
+    let showObtainedDate: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(item.name ?? "Unnamed")
+                .font(.headline)
+
+            if let date = item.expirationDate {
+                Text("Expires: \(format(date))")
+                    .font(.caption)
+            }
+            if showObtainedDate, let got = item.obtainedDate {
+                Text("Obtained: \(format(got))")
+                    .font(.caption)
+                    .foregroundColor(AppColor.secondaryText)
+            }
+            if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
+               !notes.isEmpty {
+                Text(notes)
+                    .font(.subheadline)
+                    .foregroundColor(AppColor.secondaryText)
+                    .padding(.top, 2)
+            }
+        }
+        .padding(.vertical, 6)
+    }
 
     private func format(_ date: Date) -> String {
         let f = DateFormatter()
@@ -355,4 +347,3 @@ private struct StatusListSheet: View {
         return f.string(from: date)
     }
 }
-

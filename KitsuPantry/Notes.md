@@ -1,10 +1,9 @@
 #  Notes
 
 NEXT UP: 
-    - Add expiring soon items into the noti bar.
-        - Pop up page on click should separate into 2 categories, expiring soon and expired.
     - Update the label in settings for "show status banner" to make more sense.
     - Recategorize settings.
+    - Option: show/hide expired or expiring soon from the alert banner as well.
     
 
 Exists:
@@ -23,7 +22,7 @@ Exists:
         - Expiration date by default
     - Expiry
         - Border for expired and expiring soon items.
-        - Alert bar for expired items.
+        - Alert bar for expired and expiring soon items.
     - Data persistence
         - CoreData
     - Tabs
