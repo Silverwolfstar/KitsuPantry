@@ -34,6 +34,13 @@ enum AppColor {
     static let cardFill = Color.white
     static let cardShadow = Color.black.opacity(0.3)
     
+    // Status / highlights
+    static let expiredBorder   = Color.red
+    static let expiringBorder  = Color.orange
+    static let bannerBgExpired = Color.red.opacity(0.12)
+    static let bannerBgSoon    = Color.orange.opacity(0.12)
+    static let bannerText      = Color.black
+    
     // Small icons (confirm/cancel)
     static let confirmGreen = Color.green
     static let cancelRed = Color.red

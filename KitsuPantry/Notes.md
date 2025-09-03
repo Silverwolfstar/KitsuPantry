@@ -1,7 +1,11 @@
 #  Notes
 
 NEXT UP: 
-    - 
+    - Add expiring soon items into the noti bar.
+        - Pop up page on click should separate into 2 categories, expiring soon and expired.
+    - Update the label in settings for "show status banner" to make more sense.
+    - Recategorize settings.
+    
 
 Exists:
     - List of items:
@@ -17,6 +21,9 @@ Exists:
         - Swipe left to delete
     - Sort
         - Expiration date by default
+    - Expiry
+        - Border for expired and expiring soon items.
+        - Alert bar for expired items.
     - Data persistence
         - CoreData
     - Tabs
@@ -26,23 +33,22 @@ Exists:
     - Options
         - Allows adding/removing/renaming of tabs - All is untouchable.
         - Hide “Obtained Date”
+        - Expiry
+            - Adjustible options for what qualified as "expiring soon"
+            - Hide highlighting of expired items
+            - Hide highlighting of expiring soon items
+            - Hide expired items status banner.
+        - 
 
 Todo:
     - Select option
         - Multi-select to delete or move.
-    - Add/Edit Item:
-        - Warning when duplicate item (same name and exp date) added.
     - Options:
         - On delete attempt, pop up to confirm
+        - Warning when duplicate item (same name and exp date) added.
         - Hide types of food? (sauce, for example.. reduce clutter.)
-        - Implement the highlighting of expiring soon/expired items.
-        - Pink/yellow? Or pick something cute.
-        - Adjustable threshold for what’s considered “expiring soon”.
         - Turn off “expiring soon” alerts, once implemented.
-        - Hide the top “You have xx items expired” or “expiring soon”
-        - Disable notis for expired/expiring soon
-        - Disable duplicate warning
-        - Customize theme colors
+        - Customize theme colors (i.e. dictionary it.)
     - Filter:
         - Category (Dessert, fruit, ingredient, drink, sauce, etc. Multiple options.)
         - Location. Allow multi-select, and include “Unknown”.
@@ -50,8 +56,6 @@ Todo:
         - Options. Expiration date, obtained date, incr/decr
             - (Do you want to allow sort by obtained date if toggled off?)
     - Alerts:
-        - “Expiring soon” notification/alerts.
-            - A bar above the list with “You have expired items” or “Expiring soon”, clickable to bring up list w/details.
             - Send notis when stuff gets close to expiring.
     - Final thing:
         - Set up CloudKit, pay $99 to apple for dev acc, throw it on the store. ^-^

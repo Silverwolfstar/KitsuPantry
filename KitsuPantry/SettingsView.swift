@@ -13,6 +13,8 @@ struct SettingsView: View {
     @AppStorage("suppressDuplicatePopups") private var suppressDuplicatePopups = false
     @AppStorage("defaultQuantity") private var defaultQuantity = 1
     @AppStorage("showObtainedDate") private var showObtainedDate = true
+    @AppStorage("expiringSoonDays") private var expiringSoonDays = 3
+    @AppStorage("showStatusBanner") private var showStatusBanner = true
     
     @State private var isManagingTabs = false
     @State private var isManagingLocations = false
@@ -29,6 +31,19 @@ struct SettingsView: View {
                             Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)}
                         FormRow(showSeparator: false) {
                             Toggle("Show Obtained Date Field", isOn: $showObtainedDate)}
+                    }
+                    
+                    Section(header: Text("Expiring Soon Settings").foregroundColor(AppColor.sectionTitle)) {
+                        FormRow {
+                            Toggle("Show status banner", isOn: $showStatusBanner)
+                        }
+                        FormRow(showSeparator: false) {
+                            Stepper(
+                                "Expiring soon: \(expiringSoonDays) day\(expiringSoonDays == 1 ? "" : "s")",
+                                value: $expiringSoonDays,
+                                in: 1...30
+                            )
+                        }
                     }
                     
                     Section(header: Text("Behavior").foregroundColor(AppColor.sectionTitle)) {
