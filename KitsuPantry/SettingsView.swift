@@ -29,24 +29,21 @@ struct SettingsView: View {
                             Toggle("Highlight Expired Items", isOn: $highlightExpired)}
                         FormRow {
                             Toggle("Highlight Expiring Soon Items", isOn: $highlightExpiringSoon)}
-                        FormRow(showSeparator: false) {
-                            Toggle("Show Obtained Date Field", isOn: $showObtainedDate)}
-                    }
-                    
-                    Section(header: Text("Expiring Soon Settings").foregroundColor(AppColor.sectionTitle)) {
                         FormRow {
                             Toggle("Show Expiring/Expired Banner", isOn: $showStatusBanner)
                         }
                         FormRow(showSeparator: false) {
+                            Toggle("Show Obtained Date Field", isOn: $showObtainedDate)}
+                    }
+                    
+                    Section(header: Text("Behavior").foregroundColor(AppColor.sectionTitle)) {
+                        FormRow() {
                             Stepper(
                                 "Expiring Soon: \(expiringSoonDays) Day\(expiringSoonDays == 1 ? "" : "s")",
                                 value: $expiringSoonDays,
                                 in: 1...30
                             )
                         }
-                    }
-                    
-                    Section(header: Text("Behavior").foregroundColor(AppColor.sectionTitle)) {
                         FormRow(showSeparator: false) {
                             Toggle("Suppress Duplicate Item Popups", isOn: $suppressDuplicatePopups)}
                     }

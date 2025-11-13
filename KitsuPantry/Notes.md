@@ -1,9 +1,7 @@
 #  Notes
 
-NEXT UP: 
-    - Recategorize settings.
+NEXT UP:
     - Option: show/hide expired or expiring soon from the alert banner as well.
-    
 
 Exists:
     - List of items:
