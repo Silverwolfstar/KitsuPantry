@@ -35,11 +35,11 @@ struct SettingsView: View {
                     
                     Section(header: Text("Expiring Soon Settings").foregroundColor(AppColor.sectionTitle)) {
                         FormRow {
-                            Toggle("Show status banner", isOn: $showStatusBanner)
+                            Toggle("Show Expiring/Expired Banner", isOn: $showStatusBanner)
                         }
                         FormRow(showSeparator: false) {
                             Stepper(
-                                "Expiring soon: \(expiringSoonDays) day\(expiringSoonDays == 1 ? "" : "s")",
+                                "Expiring Soon: \(expiringSoonDays) Day\(expiringSoonDays == 1 ? "" : "s")",
                                 value: $expiringSoonDays,
                                 in: 1...30
                             )
@@ -60,7 +60,7 @@ struct SettingsView: View {
                     
                     Section(header: Text("Themes & UI").foregroundColor(AppColor.sectionTitle)) {
                         FormRow(showSeparator: false) {
-                            Text("Coming soon: theme customization 🦊")
+                            Text("Coming Soon: Theme Customization 🦊")
                                 .foregroundColor(AppColor.secondaryText)
                         }
                     }

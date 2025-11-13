@@ -1,7 +1,6 @@
 #  Notes
 
 NEXT UP: 
-    - Update the label in settings for "show status banner" to make more sense.
     - Recategorize settings.
     - Option: show/hide expired or expiring soon from the alert banner as well.
     

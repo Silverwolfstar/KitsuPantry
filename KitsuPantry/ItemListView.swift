@@ -164,7 +164,7 @@ struct ItemsListView: View {
 
                                 if let notes = item.notes?.trimmingCharacters(in: .whitespacesAndNewlines),
                                    !notes.isEmpty {
-                                    Text("Notes:\n\(notes)")
+                                    Text("\(notes)")
                                         .font(.subheadline)
                                         .foregroundColor(AppColor.secondaryText)
                                         .padding(.top, 2)
@@ -321,6 +321,12 @@ private struct StatusRow: View {
             Text(item.name ?? "Unnamed")
                 .font(.headline)
 
+            let locationName = item.location?.name ?? "Unknown"
+            let formattedQty = String(format: "%.2f", item.quantity)
+                .replacingOccurrences(of: #"\.?0+$"#, with: "", options: .regularExpression)
+
+            Text("\(locationName) — Qty: \(formattedQty)")
+            
             if let date = item.expirationDate {
                 Text("Expires: \(format(date))")
                     .font(.caption)

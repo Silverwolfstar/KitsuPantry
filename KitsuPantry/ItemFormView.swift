@@ -1,5 +1,5 @@
 //
-//  AddItemView.swift
+//  ItemFormView.swift
 //  KitsuPantry
 //
 //  Created by Silver on 7/17/25.
@@ -19,6 +19,7 @@ struct ItemFormView: View {
     
     @AppStorage("showObtainedDate") private var showObtainedDate = true
     @State private var obtainedDate = Date()
+    @State private var hasExpiration = true
 
     @Binding var locations: [LocationEntity]
 
@@ -131,19 +132,36 @@ struct ItemFormView: View {
                             }
                         }
                         
-                        if showObtainedDate {
-                            FormRow {
-                                DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
+                        FormRow {
+                            HStack(spacing: 10) {
+                                Text("Expiration Date")
+                                if (hasExpiration) {
+                                    DatePicker("",
+                                               selection: $expirationDate,
+                                               displayedComponents: .date)
+                                    .disabled(!hasExpiration)
+                                    .opacity(hasExpiration ? 1 : 0.45)
+                                }
+                                else {
+                                    Spacer()
+                                    Text("No expiration  ")
+                                        .font(.caption)
+                                        .foregroundColor(AppColor.secondaryText)
+                                }
+                                
+                                Toggle("", isOn: $hasExpiration)
+                                    .labelsHidden()
+                                    .frame(width: 32)
                             }
+                        }
+
+                        // Obtained Date (only when setting is on)
+                        if showObtainedDate {
                             FormRow(showSeparator: false) {
                                 DatePicker("Obtained Date", selection: $obtainedDate, displayedComponents: .date)
                             }
                         }
-                        else {
-                            FormRow(showSeparator: false) {
-                                DatePicker("Expiration Date", selection: $expirationDate, displayedComponents: .date)
-                            }
-                        }
+
                         
                         FormRow(showSeparator: false) {
                             VStack(alignment: .leading, spacing: 4) {
@@ -162,7 +180,7 @@ struct ItemFormView: View {
                                     
                                     TextEditor(text: $notes)
                                         .padding(4)
-                                        .foregroundColor(AppColor.titleText)
+                                        .foregroundColor(AppColor.basicText)
                                         .background(Color.clear)
                                 }
                                 .frame(minHeight: 80)
@@ -197,7 +215,7 @@ struct ItemFormView: View {
                             return  // Don't save if empty or zero
                         }
                         item.quantity = Double(round(100 * parsedQuantity) / 100)
-                        item.expirationDate = expirationDate
+                        item.expirationDate = hasExpiration ? expirationDate : nil
                         item.obtainedDate = obtainedDate
                         item.notes = notes
                         
@@ -224,10 +242,13 @@ struct ItemFormView: View {
                     }
                     quantityText = "1"
                     obtainedDate = Date()
+                    hasExpiration = true
+                    expirationDate = Date()
                 case .edit(let item):
                     name = item.name ?? ""
                     selectedLocation = item.location
                     expirationDate = item.expirationDate ?? Date()
+                    hasExpiration = (item.expirationDate != nil)
                     obtainedDate = item.obtainedDate ?? Date()
                     notes = item.notes ?? ""
                     
